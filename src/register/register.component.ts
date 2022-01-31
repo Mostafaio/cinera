@@ -32,8 +32,26 @@ import {Component} from "../../@cinera/component";
 }, 'register')
 export class RegisterComponent {
     havij = 'Man register havij hastm!';
+    sib = 'aaa di di';
 
     constructor(public name: string) {
+    }
+
+    find() {
+        return 2;
+    }
+
+    search(x: any) {
+        console.log(x);
+        return x;
+    }
+
+    gett(x: number, y: number) {
+        return x * y;
+    }
+
+    fff(x: number, y: number) {
+        return x * y;
     }
 }
 
