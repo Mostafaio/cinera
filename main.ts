@@ -1,6 +1,7 @@
 import {LoginComponent} from "./src/login/login.component";
 import {RegisterComponent} from "./src/register/register.component";
-
+import {Core} from "./@cinera/core";
+import {ProfileComponent} from "./src/profile/profile.component";
 
 export class Main {
     title: string = 'aaaa';
@@ -62,22 +63,102 @@ customElements.define('element-details',
     }
 );
 
+var agg = document.createElement('link');
+agg.setAttribute('href', 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css');
+agg.setAttribute('rel', 'stylesheet');
+
+document.head.appendChild(agg);
+
+
 var a = document.createElement('element-details');
 var p = document.createElement('p');
 // p.innerHTML = '{{firstname}} {{lastname}}';
 // a.appendChild(p);
 document.body.appendChild(a);
-console.log(a);
+// console.log(a);
 
 var mainClass = new Main();
 // var login = new LoginComponent();
+var bootstrap: any = LoginComponent;
+var declarations: any[] = [
+    LoginComponent,
+    RegisterComponent,
+    ProfileComponent
+];
+// var cc = Test2;
+// (cc.prototype as any).declarations = declarations;
+// console.log(bootstrap.prototype);
+// console.log(declarations);
+// console.log((declarations[0].prototype as any).obj);
+// bootstrap.prototype.sub.subscribe(
+//     (dd: any) => {
+//         attachHTMLToPage((bootstrap.prototype as any).html, (bootstrap.prototype as any).obj.selector);
+//     }
+// );
 
-let user = new LoginComponent("dany");
-let register = new RegisterComponent('ddd');
+console.log((declarations[0].prototype as any));
+
+var loginInstance = new bootstrap();
+// var ad = new declarations[1]();
+// var ad2 = new declarations[1]();
+var core = new Core();
+
+
+core.buildComponent(loginInstance).then((bootstrapHTML) => {
+    console.log(bootstrapHTML);
+    console.log(loginInstance.obj);
+    var wrapper = document.createElement(loginInstance.obj.selector);
+    wrapper.innerHTML = bootstrapHTML;
+    document.body.appendChild(wrapper);
+    core.setEvents(loginInstance);
+    attachHTMLToPage();
+});
+
+// core.buildComponent(ad).then((aaa) => {
+//
+// });
+// core.buildComponent(ad2).then((aaa) => {
+//
+// });
+
+console.log(core.htmlSource);
+
+function attachHTMLToPage() {
+    for (let i = 0; i < declarations.length; i++) {
+        // htmlSource = htmlSource.replace('/' + 'as' + '/g', '');
+        // var regex = "<" + declarations[i].prototype.obj.selector + ">.*?<\/" + declarations[i].prototype.obj.selector + '>'; // \s*
+        // console.log(regex);
+        // console.log(htmlSource.includes(declarations[i].prototype.obj.selector));
+        const tags = document.getElementsByTagName(declarations[i].prototype.obj.selector);
+        if (tags.length > 0) {
+            for (let j = 0; j < tags.length; j++) {
+                if (!tags[j].firstChild) {
+                    const inst = new declarations[i];
+                    core.buildComponent(inst).then((instHTML) => {
+                        tags[j].innerHTML = instHTML;
+                        attachHTMLToPage();
+                    });
+                    // Object.getPrototypeOf(inst).sub.subscribe(
+                    //     () => {
+                    //         // htmlSource = htmlSource.replace(new RegExp(regex, '\g'), declarations[i].prototype.html);
+                    //         // wrapper.innerHTML = htmlSource;
+                    //     }
+                    // );
+                    // console.log(111, tags[j].localName, Object.getPrototypeOf(inst).html);
+                }
+
+            }
+        }
+    }
+}
+
+
+// let user = new LoginComponent("dany");
+// let register = new RegisterComponent('ddd');
 // let city = new City(222);
 // let ny = new City(254);
-console.log(Object.getPrototypeOf(user));
-console.log(user);
+// console.log(Object.getPrototypeOf(user));
+// console.log(user);
 
 // window.addEventListener('popstate', function (event) {
 //     // Log the state data to the console
@@ -124,5 +205,3 @@ console.log(user);
 //         // do something with 'target' and 'value'...
 //     };
 // }
-
-0

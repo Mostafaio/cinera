@@ -33,12 +33,15 @@ import {Component} from "../../@cinera/component";
 export class RegisterComponent {
     havij = 'Man register havij hastm!';
     sib = 'aaa di di';
+    hg = 0;
+    kio = 200;
 
     constructor(public name: string) {
+        this.hg = Math.random() * 10;
     }
 
     find() {
-        return 2;
+        return Math.random() * 10;
     }
 
     search(x: any) {

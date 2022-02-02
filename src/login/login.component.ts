@@ -32,8 +32,19 @@ import {Component} from "../../@cinera/component";
 }, 'login')
 export class LoginComponent {
     havij = 'Man havij hastm!';
+    aTag = 'https://poralist.com';
+    imageSource = 'https://s0.2mdn.net/simgad/16513644132299922862';
+    isShow = false;
 
-    constructor(public name: string) {
+    constructor() {
+    }
+
+    onClickBox() {
+        alert('havij');
+    }
+
+    getImageSource() {
+        return this.imageSource;
     }
 }
 

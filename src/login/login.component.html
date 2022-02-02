@@ -1,4 +1,24 @@
-<p>asdsad</p>
-<element-details></element-details>
-
-
+<button (click)="onClickBox()" id="text-block">ddd</button>
+<p *ngIf="isShow">isShow {{ isShow }}</p>
+<button>ggg</button>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <a [href]="aTag">asdsad</a>
+<!--            <p>logggggin</p>-->
+<!--            <element-details></element-details>-->
+            <div class="row">
+                <div class="col-md-4">
+                    <img style="width: 15vh" [src]="getImageSource()" alt="">
+                    <app-register></app-register>
+                </div>
+                <div class="col-md-4">
+                    <app-register></app-register>
+                </div>
+                <div class="col-md-4">
+                    <app-register></app-register>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
