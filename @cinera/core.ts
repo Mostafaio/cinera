@@ -8,6 +8,7 @@ export class Core {
     tags: { tag: any, xpath: string, tagAfterEval: any }[] = [];
     mainElement: any;
 
+
     constructor() {
     }
 
@@ -68,8 +69,8 @@ export class Core {
                         xpath: this.getXPathForElement(tags[i], mainElement),
                         tagAfterEval: newTag
                     });
-                    console.log(newTag);
-                    console.log(tags[i]);
+                    // console.log(newTag);
+                    // console.log(tags[i]);
                     if (!newTag) {
                         tags[i].remove();
                     } else {
@@ -78,7 +79,7 @@ export class Core {
                 }
             }
             this.mainElement = mainElement;
-            console.log(this.tags);
+            // console.log(this.tags);
             return mainElement;
         });
     }
@@ -92,10 +93,25 @@ export class Core {
                 if (tagAttributes[j].nodeName.match(/\[.*?\]/)) {
                     isTarget = true;
                     var hh = tagAttributes[j].value;
-                    for (let k = 0; k < funcVariables.length; k++) {
-                        hh = hh.replace(funcVariables[k], "instance." + funcVariables[k]);
+
+                    const valSplit = hh.split(';');
+                    var value = '';
+                    for (let i = 0; i < valSplit.length; i++) {
+                        var dd = valSplit[i].split('(');
+                        if (dd.length > 1) {
+                            dd[1] = dd[1].substr(0, dd[1].length - 1);
+                            value = instance[dd[0]].apply(instance, dd[1].split(','));
+                        } else {
+                            value = instance[valSplit[i]];
+                        }
                     }
-                    var value = eval(hh);
+                    // console.log( window[instance[]]);
+                    // for (let k = 0; k < funcVariables.length; k++) {
+                    //     hh = hh.replace(funcVariables[k], "instance." + funcVariables[k]);
+                    // }
+                    // var a = 'aTag';
+                    // console.log(instance[a]);
+                    // var value = eval(hh);
                     currentTag.setAttribute(tagAttributes[j].nodeName.match(/(?<=\[).+?(?=\])/), value);
                     currentTag.removeAttribute(tagAttributes[j].nodeName);
                 }
@@ -107,35 +123,74 @@ export class Core {
                     var gg = tagAttributes[j].value;
                     var eventName = tagAttributes[j].nodeName.match(/(?<=\().+?(?=\))/);
 
-                    for (let k = 0; k < funcVariables.length; k++) {
-                        gg = gg.replace(funcVariables[k], "instance." + funcVariables[k]);
-                    }
+                    // for (let k = 0; k < funcVariables.length; k++) {
+                    //     gg = gg.replace(funcVariables[k], "instance." + funcVariables[k]);
+                    // }
+                    const valSplit = gg.split(';');
+                    var value = '';
                     currentTag.addEventListener(eventName, () => {
-                        eval(gg);
-                        console.log(instance.aTag);
-                        console.log(gg);
+                        // eval(gg);
+                        for (let i = 0; i < valSplit.length; i++) {
+                            var dd = valSplit[i].split('(');
+                            if (dd.length > 1) {
+                                // @ts-ignore
+                                var ggf = valSplit[i].match(/(?<=\().+?(?=\))/g);
+                                if (ggf) {
+                                    ggf = ggf[0].split(',');
+                                    for (let b = 0; b < ggf.length; b++) {
+                                        if (this.isJson(ggf[b])) {
+                                            ggf[b] = JSON.parse(ggf[b].toLowerCase());
+                                        }
+                                        console.log(typeof ggf[b]);
+                                    }
+                                }
+
+                                instance[dd[0]].apply(instance, ggf);
+                                console.log(instance[dd[0]].apply(instance, ggf));
+                            } else {
+                                console.log(valSplit[i].split('='));
+                                var valsplt = valSplit[i].split('=');
+                                console.log(valsplt);
+                                // instance[valsplt[0]] = Function("return " + valSplit[i].match(/\s*=\s*(.*)/)[0].replace('=', ''))(); // which is same as "return 2+4"
+                                instance[valsplt[0].replace(/ /g, '')] = Function("return " + valsplt[1])(); // which is same as "return 2+4"
+                            }
+                        }
+                        console.log(instance);
+                        // Function('"use strict";return (' + gg + ')')();
+                        // console.log(instance.aTag);
+                        // console.log(gg);
                     });
                 }
 
                 // *ngIf
-                if (tagAttributes[j].nodeName.match(/\B\*ngi\w+/)) {
-                    isTarget = true;
-                    // console.log(tagAttributes[j].value);
-                    var ff = tagAttributes[j].value;
-                    for (let k = 0; k < funcVariables.length; k++) {
-                        ff = ff.replace(funcVariables[k], "instance." + funcVariables[k]);
-                    }
-                    var value = eval(ff);
-                    if (!value) {
-                        currentTag = value;
-                        // currentTag.remove();
-                    }
-
-                }
+                // if (tagAttributes[j].nodeName.match(/\B\*ngi\w+/)) {
+                //     isTarget = true;
+                //     // console.log(tagAttributes[j].value);
+                //     var ff = tagAttributes[j].value;
+                //     for (let k = 0; k < funcVariables.length; k++) {
+                //         ff = ff.replace(funcVariables[k], "instance." + funcVariables[k]);
+                //     }
+                //     var value = eval(ff);
+                //     // var value = Function('"use strict";return (' + ff + ')')();
+                //     if (!value) {
+                //         currentTag = value;
+                //         // currentTag.remove();
+                //     }
+                //
+                // }
             }
         }
 
         return {cTag: currentTag, isTarget: isTarget};
+    }
+
+    isJson(str: any) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
     }
 
     getXPathForElement(el: any, xml: any) {

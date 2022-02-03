@@ -101,7 +101,7 @@ var declarations: any[] = [
 var loginInstance = new bootstrap();
 // var ad = new declarations[1]();
 // var ad2 = new declarations[1]();
-var core = new Core();
+const core = new Core();
 
 
 core.buildNewComponent(loginInstance).then((bootstrapHTML) => {
@@ -110,17 +110,18 @@ core.buildNewComponent(loginInstance).then((bootstrapHTML) => {
     // var wrapper: any = document.createElement('div');
     // wrapper.innerHTML = bootstrapHTML;
     document.body.appendChild(bootstrapHTML);
-    loop();
+    loop(loginInstance, core);
+    attachHTMLToPage();
 
     // core.setEvents(loginInstance);
     // attachHTMLToPage();
 });
 
-function loop() {
+function loop(instance: any, mainCore: any) {
     setTimeout(() => {
-        core.updateTags(loginInstance);
-        loop();
-    }, 250);
+        mainCore.updateTags(instance);
+        loop(instance, mainCore);
+    }, 100);
 }
 
 // core.buildComponent(ad).then((aaa) => {
@@ -144,10 +145,24 @@ function attachHTMLToPage() {
                 if (!tags[j].firstChild) {
                     const inst = new declarations[i];
                     console.log(inst);
-                    core.buildNewComponent(inst).then((instHTML) => {
-                        tags[j].innerHTML = instHTML;
+                    // if (j === 0) {
+                    const core3 = new Core();
+                    core3.buildNewComponent(inst).then((instHTML: any) => {
+                        console.log(instHTML);
+                        tags[j].replaceWith(instHTML);
+                        loop(inst, core3);
                         // attachHTMLToPage();
                     });
+                    // } else {
+                    //     var core2 = new Core();
+                    //     core2.buildNewComponent(inst).then((instHTML) => {
+                    //         console.log(instHTML);
+                    //         tags[j].replaceWith(instHTML);
+                    //         loop(inst, core2);
+                    //         attachHTMLToPage();
+                    // });
+                    // }
+
                     // core.buildComponent(inst).then((instHTML) => {
                     //     tags[j].innerHTML = instHTML;
                     //     attachHTMLToPage();

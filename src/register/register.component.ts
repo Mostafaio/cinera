@@ -35,6 +35,7 @@ export class RegisterComponent {
     sib = 'aaa di di';
     hg = 0;
     kio = 200;
+    tColor = '#7b087b';
 
     constructor(public name: string) {
         this.hg = Math.random() * 10;
@@ -55,6 +56,13 @@ export class RegisterComponent {
 
     fff(x: number, y: number) {
         return x * y;
+    }
+
+
+    mind(x: number) {
+        console.log(333);
+        this.sib = '7777';
+        this.tColor = '#dadada';
     }
 }
 

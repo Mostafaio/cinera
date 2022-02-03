@@ -39,17 +39,27 @@ export class LoginComponent {
     constructor() {
     }
 
-    onClickBox(x: number) {
+    onClickBox(x: number, y: number) {
+        console.log(x, y);
         if (x === 2) {
             this.imageSource = 'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8Y2hhbmdlfGVufDB8fDB8fA%3D%3D&w=1000&q=80';
         } else {
             this.imageSource = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
         }
+        console.log(this.imageSource);
         // alert('havij' + x);
     }
 
-    getImageSource() {
+    getImageSource(x: any, y: any) {
         return this.imageSource;
+    }
+
+    getImageSource2(x: number) {
+        return this.imageSource + 5555 + x;
+    }
+
+    test() {
+        console.log('hhhhhh');
     }
 }
 
