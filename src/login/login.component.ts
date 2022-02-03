@@ -33,7 +33,7 @@ import {Component} from "../../@cinera/component";
 export class LoginComponent {
     havij = 'Man havij hastm!';
     aTag = 'https://poralist.com';
-    imageSource = 'https://s0.2mdn.net/simgad/16513644132299922862';
+    imageSource = 'https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500';
     isShow = false;
 
     constructor() {
