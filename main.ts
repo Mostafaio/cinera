@@ -96,7 +96,7 @@ var declarations: any[] = [
 //     }
 // );
 
-console.log((declarations[0].prototype as any));
+// console.log((declarations[0].prototype as any));
 
 var loginInstance = new bootstrap();
 // var ad = new declarations[1]();
@@ -104,15 +104,24 @@ var loginInstance = new bootstrap();
 var core = new Core();
 
 
-core.buildComponent(loginInstance).then((bootstrapHTML) => {
-    console.log(bootstrapHTML);
-    console.log(loginInstance.obj);
-    var wrapper = document.createElement(loginInstance.obj.selector);
-    wrapper.innerHTML = bootstrapHTML;
-    document.body.appendChild(wrapper);
-    core.setEvents(loginInstance);
-    attachHTMLToPage();
+core.buildNewComponent(loginInstance).then((bootstrapHTML) => {
+    // console.log(bootstrapHTML);
+    // console.log(loginInstance.obj);
+    // var wrapper: any = document.createElement('div');
+    // wrapper.innerHTML = bootstrapHTML;
+    document.body.appendChild(bootstrapHTML);
+    loop();
+
+    // core.setEvents(loginInstance);
+    // attachHTMLToPage();
 });
+
+function loop() {
+    setTimeout(() => {
+        core.updateTags(loginInstance);
+        loop();
+    }, 250);
+}
 
 // core.buildComponent(ad).then((aaa) => {
 //
@@ -121,7 +130,7 @@ core.buildComponent(loginInstance).then((bootstrapHTML) => {
 //
 // });
 
-console.log(core.htmlSource);
+// console.log(core.htmlSource);
 
 function attachHTMLToPage() {
     for (let i = 0; i < declarations.length; i++) {
@@ -134,10 +143,15 @@ function attachHTMLToPage() {
             for (let j = 0; j < tags.length; j++) {
                 if (!tags[j].firstChild) {
                     const inst = new declarations[i];
-                    core.buildComponent(inst).then((instHTML) => {
+                    console.log(inst);
+                    core.buildNewComponent(inst).then((instHTML) => {
                         tags[j].innerHTML = instHTML;
-                        attachHTMLToPage();
+                        // attachHTMLToPage();
                     });
+                    // core.buildComponent(inst).then((instHTML) => {
+                    //     tags[j].innerHTML = instHTML;
+                    //     attachHTMLToPage();
+                    // });
                     // Object.getPrototypeOf(inst).sub.subscribe(
                     //     () => {
                     //         // htmlSource = htmlSource.replace(new RegExp(regex, '\g'), declarations[i].prototype.html);

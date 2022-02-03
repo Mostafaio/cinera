@@ -1,6 +1,9 @@
-<button (click)="onClickBox()" id="text-block">ddd</button>
+<button (click)="onClickBox(2)" *ngIf="2222">Change 1</button>
+<button (click)="onClickBox(1)" *ngIf="2222">Change 2</button>
+<a [href]="aTag">asdsad</a>
 <p *ngIf="isShow">isShow {{ isShow }}</p>
-<button>ggg</button>
+<button (click)="onClickBox(3)">hhh</button>
+<button (click)="onClickBox(5)">ggggg</button>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">

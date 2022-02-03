@@ -5,9 +5,171 @@ export class Core {
         templateUrl: '',
         styleUrl: ''
     };
+    tags: { tag: any, xpath: string, tagAfterEval: any }[] = [];
+    mainElement: any;
 
     constructor() {
     }
+
+    updateTags(instance: any) {
+        var instancePrototype = Object.getPrototypeOf(instance);
+        // console.log(this.mainElement);
+        // console.log(this.tags);
+        // console.log(instance.imageSource);
+        // console.log(instance);
+        // this.tags[2].tagAfterEval.innerHTML = 3333;
+        for (let i = 0; i < this.tags.length; i++) {
+            const currentTag = this.tags[i].tag.cloneNode(true);
+            var tagAttributes = currentTag.attributes;
+            var funcVariables = Object.keys(instance).concat(Object.getOwnPropertyNames(instancePrototype));
+            const newTag = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance).cTag;
+            // console.log(newTag);
+            // console.log(newTag, this.tags[i].tagAfterEval, JSON.stringify(newTag) === JSON.stringify(this.tags[i].tagAfterEval));+
+            if (newTag) {
+                // console.log(newTag, this.tags[i].tagAfterEval);
+                if (!this.tags[i].tagAfterEval.isEqualNode(newTag)) {
+                    this.tags[i].tagAfterEval.replaceWith(newTag);
+                    this.tags[i].tagAfterEval = newTag;
+                    // console.log(this.tags[i].tagAfterEval);
+                }
+                // console.log(this.tags[i].tagAfterEval.isEqualNode(newTag));
+            }
+            // console.log(this.tags[i]);
+            // console.log(newTag, this.tags[i]);
+            // if (!newTag) {
+            //     tags[i].remove();
+            // } else {
+            //     tags[i].replaceWith(newTag);
+            // }
+        }
+
+    }
+
+    buildNewComponent(instance: any) {
+        var instancePrototype = Object.getPrototypeOf(instance);
+        this.obj = instancePrototype.obj;
+        var componentHTML = '';
+        var path = 'src/' + instancePrototype.mainPath + '/';
+        var tempHtmlLoc = path + instancePrototype.obj.templateUrl.replace('./', '');
+        return this.getHTMLSource(tempHtmlLoc).then((htmlSource: string) => {
+            var mainElement = document.createElement(instancePrototype.obj.selector);
+            mainElement.innerHTML = htmlSource;
+            var funcVariables = Object.keys(instance).concat(Object.getOwnPropertyNames(instancePrototype));
+            var tags = mainElement.getElementsByTagName('*');
+            // console.log(tags[i].attributes);
+            for (let i = 0; i < tags.length; i++) {
+                const currentTag = tags[i].cloneNode(true);
+                var tagAttributes = currentTag.attributes;
+                const afterEval = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance);
+                if (afterEval.isTarget) {
+                    const newTag = afterEval.cTag;
+                    this.tags.push({
+                        tag: tags[i].cloneNode(true),
+                        xpath: this.getXPathForElement(tags[i], mainElement),
+                        tagAfterEval: newTag
+                    });
+                    console.log(newTag);
+                    console.log(tags[i]);
+                    if (!newTag) {
+                        tags[i].remove();
+                    } else {
+                        tags[i].replaceWith(newTag);
+                    }
+                }
+            }
+            this.mainElement = mainElement;
+            console.log(this.tags);
+            return mainElement;
+        });
+    }
+
+    getTagAfterEval(tagAttributes: any, currentTag: any, funcVariables: string[], instance: any) {
+        var isTarget = false;
+        if (tagAttributes.length > 0) {
+            for (let j = 0; j < tagAttributes.length; j++) {
+
+                // directives with brackets []
+                if (tagAttributes[j].nodeName.match(/\[.*?\]/)) {
+                    isTarget = true;
+                    var hh = tagAttributes[j].value;
+                    for (let k = 0; k < funcVariables.length; k++) {
+                        hh = hh.replace(funcVariables[k], "instance." + funcVariables[k]);
+                    }
+                    var value = eval(hh);
+                    currentTag.setAttribute(tagAttributes[j].nodeName.match(/(?<=\[).+?(?=\])/), value);
+                    currentTag.removeAttribute(tagAttributes[j].nodeName);
+                }
+
+                // events with ()
+                if (tagAttributes[j].nodeName.match(/\(.*?\)/)) {
+                    isTarget = true;
+                    // this.getHavij(tagAttributes, j, funcVariables, currentTag, instance);
+                    var gg = tagAttributes[j].value;
+                    var eventName = tagAttributes[j].nodeName.match(/(?<=\().+?(?=\))/);
+
+                    for (let k = 0; k < funcVariables.length; k++) {
+                        gg = gg.replace(funcVariables[k], "instance." + funcVariables[k]);
+                    }
+                    currentTag.addEventListener(eventName, () => {
+                        eval(gg);
+                        console.log(instance.aTag);
+                        console.log(gg);
+                    });
+                }
+
+                // *ngIf
+                if (tagAttributes[j].nodeName.match(/\B\*ngi\w+/)) {
+                    isTarget = true;
+                    // console.log(tagAttributes[j].value);
+                    var ff = tagAttributes[j].value;
+                    for (let k = 0; k < funcVariables.length; k++) {
+                        ff = ff.replace(funcVariables[k], "instance." + funcVariables[k]);
+                    }
+                    var value = eval(ff);
+                    if (!value) {
+                        currentTag = value;
+                        // currentTag.remove();
+                    }
+
+                }
+            }
+        }
+
+        return {cTag: currentTag, isTarget: isTarget};
+    }
+
+    getXPathForElement(el: any, xml: any) {
+        var xpath = '';
+        var pos, tempitem2;
+
+        while (el !== xml) {
+            pos = -1;
+            tempitem2 = el;
+            while (tempitem2) {
+                if (tempitem2.nodeType === 1 && tempitem2.nodeName === el.nodeName) { // If it is ELEMENT_NODE of the same name
+                    pos += 1;
+                }
+                tempitem2 = tempitem2.previousSibling;
+            }
+
+            if (pos === 0) {
+                xpath = el.nodeName + '/' + xpath;
+
+            } else {
+                xpath = el.nodeName + "[" + pos + ']' + '/' + xpath;
+            }
+
+            el = el.parentNode;
+        }
+        xpath = '[' + xml.nodeName + "']" + '/' + xpath;
+        xpath = xpath.replace(/\/$/, '');
+        return xpath.toLocaleLowerCase();
+    }
+
+    getHavij(tagAttributes: any, j: any, funcVariables: any, currentTag: any, instance: any) {
+
+    }
+
 
     buildComponent(instance: any) {
         var instancePrototype = Object.getPrototypeOf(instance);
@@ -27,10 +189,10 @@ export class Core {
             componentHTML = htmlSource;
             // var dd: any = document.createElement('div');
             // dd.innerHTML = componentHTML;
-            // console.log(dd);
-            // var elem: any = dd.getElementsByTagName("button")[0];
+            // console.log(componentHTML);
+            // var elem: any = dd.getElementsByTagName("*");
             // console.log(elem);
-            // var attrs = elem.attributes;
+            // var attrs = elem[0].attributes;
             // for (var i = 0; i < attrs.length; i++) {
             //     console.error("Name: " + attrs[i].name + " Value: " + attrs[i].value);
             // }
