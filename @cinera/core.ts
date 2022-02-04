@@ -22,8 +22,10 @@ export class Core {
         for (let i = 0; i < this.tags.length; i++) {
             const currentTag = this.tags[i].tag.cloneNode(true);
             var tagAttributes = currentTag.attributes;
-            var funcVariables = Object.keys(instance).concat(Object.getOwnPropertyNames(instancePrototype));
-            const newTag = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance).cTag;
+            var funcs = Object.getOwnPropertyNames(instancePrototype);
+            var variables = Object.keys(instance);
+            var funcVariables = variables.concat(funcs);
+            const newTag = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance, funcs, variables).cTag;
             // console.log(newTag);
             // console.log(newTag, this.tags[i].tagAfterEval, JSON.stringify(newTag) === JSON.stringify(this.tags[i].tagAfterEval));+
             if (newTag) {
@@ -55,13 +57,15 @@ export class Core {
         return this.getHTMLSource(tempHtmlLoc).then((htmlSource: string) => {
             var mainElement = document.createElement(instancePrototype.obj.selector);
             mainElement.innerHTML = htmlSource;
-            var funcVariables = Object.keys(instance).concat(Object.getOwnPropertyNames(instancePrototype));
+            var funcs = Object.getOwnPropertyNames(instancePrototype);
+            var variables = Object.keys(instance);
+            var funcVariables = variables.concat(funcs);
             var tags = mainElement.getElementsByTagName('*');
             // console.log(tags[i].attributes);
             for (let i = 0; i < tags.length; i++) {
                 const currentTag = tags[i].cloneNode(true);
                 var tagAttributes = currentTag.attributes;
-                const afterEval = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance);
+                const afterEval = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance, funcs, variables);
                 if (afterEval.isTarget) {
                     const newTag = afterEval.cTag;
                     this.tags.push({
@@ -84,10 +88,72 @@ export class Core {
         });
     }
 
-    getTagAfterEval(tagAttributes: any, currentTag: any, funcVariables: string[], instance: any) {
+    getTagAfterEval(tagAttributes: any, currentTag: any, funcVariables: string[], instance: any, funcs: string[] = [], variables: string[] = []) {
         var isTarget = false;
+
+        // interpolation
+        // console.log(variables);
+        for (let i = 0; i < variables.length; i++) {
+            var regex = "\{{\\s*" + variables[i] + "\\s*}}"; // \s*
+            if (currentTag.textContent) {
+                // console.log(regex);
+                // console.log(currentTag.textContent.replace(new RegExp(regex, "g"), instance[variables[i]]));
+                currentTag.textContent = currentTag.textContent.replace(new RegExp(regex, "g"), instance[variables[i]]);
+                // console.log(currentTag.textContent.replace(new RegExp(regex, "g"), 'golabi'));
+                // console.log([currentTag]);
+            }
+                // console.log(instance[funcVariables[i]]);
+            isTarget = true;
+        }
+        let htmlFuncs: any = currentTag.textContent.match(/(?<=\{{).+?(?=\}})/g);
+        // console.log(htmlFuncs);
+        // for (let i = 0; i < funcs.length; i++) {
+        if (htmlFuncs) {
+            for (let j = 0; j < htmlFuncs.length; j++) {
+                htmlFuncs[j] = htmlFuncs[j].replace(/ /g, '');
+                var dd = htmlFuncs[j].split('(');
+                if (dd.length > 1) {
+                    // @ts-ignore
+                    var ggf = htmlFuncs[j].match(/(?<=\().+?(?=\))/g);
+                    if (ggf) {
+                        ggf = ggf[0].split(',');
+                        for (let b = 0; b < ggf.length; b++) {
+                            if (this.isJson(ggf[b])) {
+                                ggf[b] = JSON.parse(ggf[b].toLowerCase());
+                            }
+                            if (ggf[b].toString().replace(/ /g, '') === '$event') {
+                                ggf[b] = event;
+                            }
+                        }
+                    }
+                }
+
+                currentTag.textContent = instance[dd[0]].apply(instance, ggf);
+                isTarget = true;
+                // instance[dd[0]].apply(instance, ggf);
+            }
+        }
+            // var regex = "\{{\\s*" + funcVariables[i] + "\\s*}}"; // \s*
+            // if (currentTag.textContent) {
+            //     var value = '';
+            //     var dd = valSplit[i].split('(');
+            //     if (dd.length > 1) {
+            //         dd[1] = dd[1].substr(0, dd[1].length - 1);
+            //         value = instance[dd[0]].apply(instance, dd[1].split(','));
+            //     } else {
+            //         value = instance[valSplit[i]];
+            //     }
+            //     currentTag.textContent = currentTag.textContent.replace(new RegExp(regex, "g"), instance[funcVariables[i]]);
+            // }
+        // }
+
+
+
+
+
         if (tagAttributes.length > 0) {
             for (let j = 0; j < tagAttributes.length; j++) {
+
 
                 // directives with brackets []
                 if (tagAttributes[j].nodeName.match(/\[.*?\]/)) {
@@ -128,7 +194,7 @@ export class Core {
                     // }
                     const valSplit = gg.split(';');
                     var value = '';
-                    currentTag.addEventListener(eventName, () => {
+                    currentTag.addEventListener(eventName, (event: any) => {
                         // eval(gg);
                         for (let i = 0; i < valSplit.length; i++) {
                             var dd = valSplit[i].split('(');
@@ -141,7 +207,9 @@ export class Core {
                                         if (this.isJson(ggf[b])) {
                                             ggf[b] = JSON.parse(ggf[b].toLowerCase());
                                         }
-                                        console.log(typeof ggf[b]);
+                                        if (ggf[b].toString().replace(/ /g, '') === '$event') {
+                                            ggf[b] = event;
+                                        }
                                     }
                                 }
 

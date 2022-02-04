@@ -1,8 +1,12 @@
 <button (click)="onClickBox(2, true);test();test();aTag = 444 + '9';" *ngIf="2222">Change 1</button>
 <button (click)="onClickBox(1, false)" *ngIf="2222">Change 2</button>
 <a [href]="aTag">asdsad</a>
+<p>{{ havij }}</p>
+<p>{{ getTestVal() }}</p>
 <p *ngIf="isShow">isShow {{ isShow }}</p>
 <button (click)="onClickBox(3)">hhh</button>
+<input type="text" (keyup)="writeInp(22, $event)">
+<p>{{ inpVal }}</p>
 <button (click)="onClickBox(5)">ggggg</button>
 <div class="container-fluid">
     <div class="row">

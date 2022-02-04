@@ -35,6 +35,7 @@ export class LoginComponent {
     aTag = 'https://poralist.com';
     imageSource = 'https://api.poralist.com/api-v1/files/file-test/public/logo.png';
     isShow = false;
+    inpVal = '';
 
     constructor() {
     }
@@ -54,12 +55,21 @@ export class LoginComponent {
         return this.imageSource;
     }
 
+    getTestVal() {
+        return this.inpVal;
+    }
+
     getImageSource2(x: number) {
         return this.imageSource + 5555 + x;
     }
 
     test() {
         console.log('hhhhhh');
+    }
+
+    writeInp(e: any, t: any) {
+        this.inpVal = t.target.value;
+        console.log(this.inpVal);
     }
 }
 
