@@ -36,18 +36,24 @@ export class LoginComponent {
     imageSource = 'https://api.poralist.com/api-v1/files/file-test/public/logo.png';
     isShow = false;
     inpVal = '';
+    arr = [1, 2, 3];
 
     constructor() {
     }
 
     onClickBox(x: number, y: number) {
-        console.log(x, y);
+        // this.arr.pop();
+        this.arr[0] = 6;
+        // this.aTag  = (Math.random() * 10).toString();
+        // console.log(this.aTag);
+        // console.log(x, y);
         if (x === 2) {
             this.imageSource = 'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8Y2hhbmdlfGVufDB8fDB8fA%3D%3D&w=1000&q=80';
         } else {
             this.imageSource = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
         }
-        console.log(this.imageSource);
+        // console.log(this.imageSource);
+        // console.log(this.arr);
         // alert('havij' + x);
     }
 

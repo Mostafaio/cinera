@@ -7,6 +7,9 @@ export class Core {
     };
     tags: { tag: any, xpath: string, tagAfterEval: any }[] = [];
     mainElement: any;
+    tempTags = [];
+    forTags: { mainTagIndex: number, newTags: any[] }[] = [];
+    instance: any;
 
 
     constructor() {
@@ -20,12 +23,12 @@ export class Core {
         // console.log(instance);
         // this.tags[2].tagAfterEval.innerHTML = 3333;
         for (let i = 0; i < this.tags.length; i++) {
-            const currentTag = this.tags[i].tag.cloneNode(true);
+            const currentTag = this.tags[i].tagAfterEval.cloneNode(true);
             var tagAttributes = currentTag.attributes;
             var funcs = Object.getOwnPropertyNames(instancePrototype);
             var variables = Object.keys(instance);
             var funcVariables = variables.concat(funcs);
-            const newTag = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance, funcs, variables).cTag;
+            const newTag = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance, funcs, variables, this.tags[i].tagAfterEval, i).cTag;
             // console.log(newTag);
             // console.log(newTag, this.tags[i].tagAfterEval, JSON.stringify(newTag) === JSON.stringify(this.tags[i].tagAfterEval));+
             if (newTag) {
@@ -51,44 +54,73 @@ export class Core {
     buildNewComponent(instance: any) {
         var instancePrototype = Object.getPrototypeOf(instance);
         this.obj = instancePrototype.obj;
+        this.instance = instance;
+        var aa = instance.aTag;
+        var ab = instance.arr.slice();
+        // ab.push(5);
+        // this.repeatChecking(aa, instance);
+
+        var dg = instance.getImageSource();
+        this.repeatChecking3(dg, instance);
+
+        this.instance.imageSource = '65656';
+        this.instance.imageSource = '2222';
+        this.instance.imageSource = '42424';
+
+        this.instance.aTag = '222222';
+        // console.log(ab);
+        // console.log(aa, this.instance.aTag);
         var componentHTML = '';
         var path = 'src/' + instancePrototype.mainPath + '/';
         var tempHtmlLoc = path + instancePrototype.obj.templateUrl.replace('./', '');
         return this.getHTMLSource(tempHtmlLoc).then((htmlSource: string) => {
             var mainElement = document.createElement(instancePrototype.obj.selector);
             mainElement.innerHTML = htmlSource;
+            const vv = document.createElement('p');
+            vv.innerHTML = '44444';
+            mainElement.appendChild(vv);
             var funcs = Object.getOwnPropertyNames(instancePrototype);
             var variables = Object.keys(instance);
             var funcVariables = variables.concat(funcs);
-            var tags = mainElement.getElementsByTagName('*');
+            var tags = mainElement.childNodes;
+            this.tempTags = tags;
+            // console.log(tags);
+            // console.log(tags);
+            this.mainElement = mainElement;
+            // this.mainElement.appendChild(vv);
             // console.log(tags[i].attributes);
-            for (let i = 0; i < tags.length; i++) {
-                const currentTag = tags[i].cloneNode(true);
-                var tagAttributes = currentTag.attributes;
-                const afterEval = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance, funcs, variables);
-                if (afterEval.isTarget) {
-                    const newTag = afterEval.cTag;
-                    this.tags.push({
-                        tag: tags[i].cloneNode(true),
-                        xpath: this.getXPathForElement(tags[i], mainElement),
-                        tagAfterEval: newTag
-                    });
-                    // console.log(newTag);
-                    // console.log(tags[i]);
-                    if (!newTag) {
-                        tags[i].remove();
-                    } else {
-                        tags[i].replaceWith(newTag);
+            for (let i = 1; i < tags.length; i++) {
+                if (tags[i].nodeType !== 3 && tags[i].nodeType !== 8) {
+                    const currentTag = tags[i].cloneNode(true);
+                    var tagAttributes = currentTag.attributes;
+                    // var fd = document.createElement('span');
+                    // tags[i].appendChild(fd);
+                    const afterEval = this.getTagAfterEval(tagAttributes, currentTag, funcVariables, instance, funcs, variables, tags[i], i);
+                    if (afterEval.isTarget) {
+                        const newTag = afterEval.cTag;
+                        this.tags.push({
+                            tag: tags[i].cloneNode(true),
+                            xpath: this.getXPathForElement(tags[i], mainElement),
+                            tagAfterEval: newTag
+                        });
+                        // console.log(this.tags);
+                        // console.log(newTag);
+                        // console.log(tags[i]);
+                        if (!newTag) {
+                            tags[i].remove();
+                        } else {
+                            tags[i].replaceWith(newTag);
+                        }
                     }
                 }
             }
-            this.mainElement = mainElement;
+            // this.mainElement = mainElement;
             // console.log(this.tags);
             return mainElement;
         });
     }
 
-    getTagAfterEval(tagAttributes: any, currentTag: any, funcVariables: string[], instance: any, funcs: string[] = [], variables: string[] = []) {
+    getTagAfterEval(tagAttributes: any, currentTag: any, funcVariables: string[], instance: any, funcs: string[] = [], variables: string[] = [], realTag: any, index: number) {
         var isTarget = false;
 
         // interpolation
@@ -102,7 +134,7 @@ export class Core {
                 // console.log(currentTag.textContent.replace(new RegExp(regex, "g"), 'golabi'));
                 // console.log([currentTag]);
             }
-                // console.log(instance[funcVariables[i]]);
+            // console.log(instance[funcVariables[i]]);
             isTarget = true;
         }
         let htmlFuncs: any = currentTag.textContent.match(/(?<=\{{).+?(?=\}})/g);
@@ -133,22 +165,19 @@ export class Core {
                 // instance[dd[0]].apply(instance, ggf);
             }
         }
-            // var regex = "\{{\\s*" + funcVariables[i] + "\\s*}}"; // \s*
-            // if (currentTag.textContent) {
-            //     var value = '';
-            //     var dd = valSplit[i].split('(');
-            //     if (dd.length > 1) {
-            //         dd[1] = dd[1].substr(0, dd[1].length - 1);
-            //         value = instance[dd[0]].apply(instance, dd[1].split(','));
-            //     } else {
-            //         value = instance[valSplit[i]];
-            //     }
-            //     currentTag.textContent = currentTag.textContent.replace(new RegExp(regex, "g"), instance[funcVariables[i]]);
-            // }
+        // var regex = "\{{\\s*" + funcVariables[i] + "\\s*}}"; // \s*
+        // if (currentTag.textContent) {
+        //     var value = '';
+        //     var dd = valSplit[i].split('(');
+        //     if (dd.length > 1) {
+        //         dd[1] = dd[1].substr(0, dd[1].length - 1);
+        //         value = instance[dd[0]].apply(instance, dd[1].split(','));
+        //     } else {
+        //         value = instance[valSplit[i]];
+        //     }
+        //     currentTag.textContent = currentTag.textContent.replace(new RegExp(regex, "g"), instance[funcVariables[i]]);
         // }
-
-
-
+        // }
 
 
         if (tagAttributes.length > 0) {
@@ -214,7 +243,7 @@ export class Core {
                                 }
 
                                 instance[dd[0]].apply(instance, ggf);
-                                console.log(instance[dd[0]].apply(instance, ggf));
+                                // console.log(instance[dd[0]].apply(instance, ggf));
                             } else {
                                 console.log(valSplit[i].split('='));
                                 var valsplt = valSplit[i].split('=');
@@ -223,7 +252,7 @@ export class Core {
                                 instance[valsplt[0].replace(/ /g, '')] = Function("return " + valsplt[1])(); // which is same as "return 2+4"
                             }
                         }
-                        console.log(instance);
+                        // console.log(instance);
                         // Function('"use strict";return (' + gg + ')')();
                         // console.log(instance.aTag);
                         // console.log(gg);
@@ -246,10 +275,171 @@ export class Core {
                 //     }
                 //
                 // }
+
+                // *ngFor
+                if (tagAttributes[j].nodeName.match(/\B\*ngfo\w+/)) {
+                    isTarget = true;
+                    // console.log(currentTag.COMMENT_NODE);
+                    // console.log(tagAttributes[j].value);
+                    var ff = tagAttributes[j].value.split(' of ');
+                    var nameOfIn = ff[0].split('let ')[1];
+                    // console.log(ff);
+                    // console.log(nameOfIn);
+                    // console.log(instance[ff[1]]);
+                    // console.log(currentTag);
+                    var arr = instance[ff[1]];
+                    // var df = document.createElement('span');
+                    // df.innerHTML = '333';
+                    // realTag.after(df);
+                    // console.log(currentTag.previousSibling);
+                    const comment = document.createComment(tagAttributes[j].value);
+                    // console.log([realTag]);
+                    // console.log([this.tempTags[index - 1]]);
+                    // (this.tempTags[index - 2] as any).before(comment);
+                    // console.log([currentTag]);
+                    currentTag.removeAttribute(tagAttributes[j].nodeName);
+                    currentTag.setAttribute('ngFor', 'true');
+                    // console.log(this.mainElement);
+                    this.forTags.push({
+                        mainTagIndex: index,
+                        newTags: []
+                    });
+
+                    for (let i = 0; i < arr.length; i++) {
+                        // console.log(currentTag);
+                        if (!currentTag.parentNode) {
+                            // var instancePrototype = Object.getPrototypeOf(instance);
+                            // var parent = document.getElementsByTagName(instancePrototype.obj.selector);
+                            // if (parent.length > 0) {
+                            var newD = currentTag.cloneNode(true);
+                            newD.innerHTML = arr[i];
+                            this.forTags[this.forTags.length - 1].newTags.push(newD);
+                            if (i === 0) {
+                                newD = this.mainElement.insertBefore(newD, realTag.nextSibling);
+                            } else {
+                                newD = this.mainElement.insertBefore(newD, this.forTags[0].newTags[i - 1].nextSibling);
+                            }
+                            // realTag.after(df);
+                            this.tags.push({
+                                tag: newD.cloneNode(true),
+                                xpath: this.getXPathForElement(newD, this.mainElement),
+                                tagAfterEval: newD
+                            });
+                            // console.log(this.mainElement);
+                            // }
+                        }
+                    }
+                    var ab = instance[ff[1]].slice();
+                    this.repeatChecking2(ab, instance, ff[1], currentTag, 0);
+                    // currentTag.remove();
+                    // console.log(this.forTags);
+                    // currentTag.parentNode.insertBefore(newD, currentTag.nextSibling);
+                    // for (let k = 0; k < funcVariables.length; k++) {
+                    //     ff = ff.replace(funcVariables[k], "instance." + funcVariables[k]);
+                    // }
+                    // var value = eval(ff);
+                    // var value = Function('"use strict";return (' + ff + ')')();
+                    // if (!value) {
+                    //     currentTag = value;
+                    // currentTag.remove();
+                    // }
+                }
             }
         }
 
         return {cTag: currentTag, isTarget: isTarget};
+    }
+
+    repeatChecking3(oldValue: any, obj2: any) {
+        if (oldValue) {
+            setInterval(() => {
+                obj2 = this.instance.getImageSource();
+                if (JSON.stringify(obj2) !== JSON.stringify(oldValue)) {
+                    console.log(`Value of ${oldValue} to ${obj2}`);
+                    oldValue = obj2.slice();
+                }
+            }, 10);
+        }
+    }
+
+    repeatChecking2(oldValue: any, obj2: any, variableName: string, currentTag: any, newTagIndex: any) {
+        console.log(this.forTags);
+        if (oldValue) {
+            setInterval(() => {
+                this.forTags[0].newTags[0].innerHTML = '5555';
+                obj2 = this.instance[variableName];
+                if (JSON.stringify(obj2) !== JSON.stringify(oldValue)) {
+                    // console.log(obj2);
+                    let difference = obj2.filter((x: any) => !oldValue.includes(x));
+                    // let bigger = obj2;
+                    // let smaller = oldValue;
+                    // if (bigger.length < oldValue.length) {
+                    //     bigger = oldValue;
+                    //     smaller = obj2;
+                    // }
+                    if (oldValue.length > obj2.length) {
+                        for (let i = 0; i < oldValue.length - obj2.length; i++) {
+                            this.forTags[newTagIndex].newTags[obj2.length + i].remove();
+                        }
+                    }
+                    for (let i = 0; i < obj2.length; i++) {
+                        if (obj2[i] !== oldValue[i]) {
+                            console.log(444);
+                            this.forTags[newTagIndex].newTags[i].innerHTML = obj2[i];
+                        }
+                    }
+                    console.log(this.forTags);
+                    // for (let i = 0; i < bigger.length; i++) {
+                    //     if (smaller[i] !== bigger[i]) {
+                    //         if (!smaller[i] && smaller[i] === obj2[i]) {
+                    //             var newD = currentTag.cloneNode(true);
+                    //             console.log(this.forTags[0].newTags.length - 1);
+                    //             this.forTags[0].newTags[this.forTags[0].newTags.length - 1].remove();
+                    //             this.forTags[0].newTags.pop();
+                    //             console.log(this.forTags);
+                    //             // newD.innerHTML = newD.innerHTML + Math.random();
+                    //             // this.mainElement.insertBefore(newD, this.forTags[0].newTags[this.forTags[0].newTags.length - 1].nextSibling);
+                    //             // this.tags.push({
+                    //             //     tag: newD.cloneNode(true),
+                    //             //     xpath: this.getXPathForElement(newD, this.mainElement),
+                    //             //     tagAfterEval: newD
+                    //             // });
+                    //             // this.forTags[this.forTags.length - 1].newTags.push(newD);
+                    //             console.log(newD);
+                    //             console.log(33);
+                    //         } else if (!smaller[i] && smaller[i] !== obj2[i]) {
+                    //             var newD = currentTag.cloneNode(true);
+                    //             newD.innerHTML = newD.innerHTML + Math.random();
+                    //             this.mainElement.insertBefore(newD, this.forTags[0].newTags[this.forTags[0].newTags.length - 1].nextSibling);
+                    //             this.tags.push({
+                    //                 tag: newD.cloneNode(true),
+                    //                 xpath: this.getXPathForElement(newD, this.mainElement),
+                    //                 tagAfterEval: newD
+                    //             });
+                    //             this.forTags[this.forTags.length - 1].newTags.push(newD);
+                    //             console.log(newD);
+                    //             console.log(33);
+                    //         }
+                    //         console.log(22);
+                    //     }
+                    // }
+                    console.log(`Value of ${oldValue} to ${obj2}`);
+                    oldValue = obj2.slice();
+                }
+            }, 10);
+        }
+    }
+
+    repeatChecking(oldValue: any, obj2: any) {
+        if (oldValue) {
+            setInterval(() => {
+                obj2 = this.instance.aTag;
+                if (obj2 !== oldValue) {
+                    console.log(`Value of ${oldValue} to ${obj2}`);
+                    oldValue = obj2;
+                }
+            }, 10);
+        }
     }
 
     isJson(str: any) {

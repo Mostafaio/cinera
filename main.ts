@@ -104,6 +104,46 @@ var loginInstance = new bootstrap();
 const core = new Core();
 
 
+
+// const obj = {
+//     localA: loginInstance.havij,
+//     get a() {
+//         return this.localA;
+//     },
+//     set a(value) {
+//         this.localA = value;
+//         console.log(`localA is changed to ${value}`);
+//     }
+// };
+
+const obj2 = {
+    foo: 'havij'
+};
+
+function repeatChecking(oldValue: any) {
+    if(oldValue) {
+        setInterval(() => {
+            if(obj2.foo !== oldValue) {
+                console.log(`Value of ${oldValue} to ${obj2.foo}`);
+                oldValue = obj2.foo;
+            }
+        }, 10);
+    }
+}
+
+// repeatChecking(obj2.foo);
+// obj2.foo = "I have changed.";
+
+setTimeout(()=> {
+    obj2.foo = "I have changed again.";
+}, 1000);
+
+loginInstance.havij = 111
+// obj.a = 5;
+// obj.a = 6;
+loginInstance.havij = 'aaa';
+// console.log(obj.a);
+
 core.buildNewComponent(loginInstance).then((bootstrapHTML) => {
     // console.log(bootstrapHTML);
     // console.log(loginInstance.obj);
