@@ -331,7 +331,7 @@ export class Core {
                             if (i === 1) {
                                 newD = this.mainElement.insertBefore(newD, realTag.nextSibling);
                             } else {
-                                newD = this.mainElement.insertBefore(newD, this.forTags[0].newTags[i - 2].nextSibling);
+                                newD = this.mainElement.insertBefore(newD, this.forTags[this.forTags.length - 1].newTags[i - 2].nextSibling);
                             }
                             // newD.innerHTML = '333333';
                             // realTag.after(df);
@@ -345,7 +345,7 @@ export class Core {
                         }
                     }
                     var ab = instance[ff[1]].slice();
-                    this.repeatChecking2(ab, instance, ff[1], currentTag, 0, testD);
+                    this.repeatChecking2(ab, instance, ff[1], currentTag, this.forTags.length - 1, testD);
                     // currentTag.remove();
                     // console.log(this.forTags);
                     // currentTag.parentNode.insertBefore(newD, currentTag.nextSibling);
@@ -400,6 +400,7 @@ export class Core {
 
     repeatChecking2(oldValue: any, obj2: any, variableName: string, currentTag: any, newTagIndex: any, testD: any[]) {
         console.log(this.forTags, testD);
+        console.log(newTagIndex);
         if (oldValue) {
             // this.test(testD);
             // setTimeout(() => {
@@ -429,18 +430,18 @@ export class Core {
                         }
                     }
                     console.log(oldValue, obj2, tags);
-                    console.log(this.forTags[0].mainTagIndex);
+                    console.log(this.forTags[newTagIndex].mainTagIndex, newTagIndex);
                     if (oldValue.length > obj2.length) {
                         for (let i = 0; i < oldValue.length - obj2.length; i++) {
-                            console.log(this.forTags[0].mainTagIndex + oldValue.length - 1 - i);
-                            tags[this.forTags[0].mainTagIndex + oldValue.length - 1 - i].remove();
+                            console.log(this.forTags[newTagIndex].mainTagIndex + oldValue.length - 1 - i);
+                            tags[this.forTags[newTagIndex].mainTagIndex + oldValue.length - 1 - i].remove();
                             // this.forTags[newTagIndex].newTags[obj2.length + i].remove();
                         }
                     } else if (oldValue.length < obj2.length) {
                         for (let i = 0; i < obj2.length - oldValue.length; i++) {
                             var newD = currentTag.cloneNode(true);
                             newD.innerHTML = obj2[oldValue.length + i];
-                            this.mainElement.insertBefore(newD, tags[this.forTags[0].mainTagIndex + oldValue.length - 1].nextSibling);
+                            this.mainElement.insertBefore(newD, tags[this.forTags[newTagIndex].mainTagIndex + oldValue.length - 1].nextSibling);
                             // tags[this.forTags[0].mainTagIndex + oldValue.length - 1 + i].remove();
                             // this.forTags[newTagIndex].newTags[obj2.length + i].remove();
                         }
@@ -449,7 +450,7 @@ export class Core {
                             if (obj2[i] !== oldValue[i]) {
                                 console.log(444);
                                 // testD[i].innerHTML = obj2[i];
-                                tags[this.forTags[0].mainTagIndex + i].innerHTML = obj2[i];
+                                tags[this.forTags[newTagIndex].mainTagIndex + i].innerHTML = obj2[i];
                                 // this.forTags[newTagIndex].newTags[i].innerHTML = obj2[i];
                             }
                         }
