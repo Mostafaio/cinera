@@ -7,7 +7,7 @@ export class Core {
     };
     tags: { tag: any, xpath: string, tagAfterEval: any }[] = [];
     mainElement: any;
-    tempTags = [];
+    tempTags: any[] = [];
     forTags: { mainTagIndex: number, newTags: any[] }[] = [];
     instance: any;
 
@@ -82,11 +82,19 @@ export class Core {
             var funcs = Object.getOwnPropertyNames(instancePrototype);
             var variables = Object.keys(instance);
             var funcVariables = variables.concat(funcs);
-            var tags = mainElement.childNodes;
-            this.tempTags = tags;
+            // var tags = mainElement.childNodes;
             // console.log(tags);
             // console.log(tags);
             this.mainElement = mainElement;
+            console.log(this.mainElement.childNodes);
+            var tags = [];
+            for (let i = 0; i < this.mainElement.childNodes.length; i++) {
+                if (this.mainElement.childNodes[i].nodeType !== 3) {
+                    tags.push(this.mainElement.childNodes[i]);
+                }
+            }
+            // var tags = this.mainElement.childNodes.map((v: any) => v.nodeType !== 3);
+            this.tempTags = tags;
             // this.mainElement.appendChild(vv);
             // console.log(tags[i].attributes);
             for (let i = 1; i < tags.length; i++) {
@@ -305,20 +313,27 @@ export class Core {
                         newTags: []
                     });
 
-                    for (let i = 0; i < arr.length; i++) {
+                    var testD = [];
+                    currentTag.innerHTML = arr[0];
+
+                    for (let i = 1; i < arr.length; i++) {
                         // console.log(currentTag);
                         if (!currentTag.parentNode) {
                             // var instancePrototype = Object.getPrototypeOf(instance);
                             // var parent = document.getElementsByTagName(instancePrototype.obj.selector);
                             // if (parent.length > 0) {
-                            var newD = currentTag.cloneNode(true);
+                            var cloneNode = currentTag.cloneNode(true);
+                            var newD = document.createElement('p');
+                            // newD.replaceWith(cloneNode);
                             newD.innerHTML = arr[i];
+                            testD.push(newD);
                             this.forTags[this.forTags.length - 1].newTags.push(newD);
-                            if (i === 0) {
+                            if (i === 1) {
                                 newD = this.mainElement.insertBefore(newD, realTag.nextSibling);
                             } else {
-                                newD = this.mainElement.insertBefore(newD, this.forTags[0].newTags[i - 1].nextSibling);
+                                newD = this.mainElement.insertBefore(newD, this.forTags[0].newTags[i - 2].nextSibling);
                             }
+                            // newD.innerHTML = '333333';
                             // realTag.after(df);
                             this.tags.push({
                                 tag: newD.cloneNode(true),
@@ -330,7 +345,7 @@ export class Core {
                         }
                     }
                     var ab = instance[ff[1]].slice();
-                    this.repeatChecking2(ab, instance, ff[1], currentTag, 0);
+                    this.repeatChecking2(ab, instance, ff[1], currentTag, 0, testD);
                     // currentTag.remove();
                     // console.log(this.forTags);
                     // currentTag.parentNode.insertBefore(newD, currentTag.nextSibling);
@@ -362,11 +377,41 @@ export class Core {
         }
     }
 
-    repeatChecking2(oldValue: any, obj2: any, variableName: string, currentTag: any, newTagIndex: any) {
-        console.log(this.forTags);
+    // test(testD: any) {
+    //     // testD[0].innerHTML = Math.random();
+    //     this.forTags[0].newTags[0].innerHTML = Math.random();
+    //     console.log(2);
+    //     this.sleep(50);
+    //     // this.test(testD);
+    //     // setTimeout(() => {
+    //     //     this.test(testD);
+    //     // }, 500);
+    // }
+
+    // sleep(milliseconds: any) {
+    //     var start = new Date().getTime();
+    //     for (var i = 0; i < 1e7; i++) {
+    //         if ((new Date().getTime() - start) > milliseconds){
+    //             break;
+    //         }
+    //     }
+    // }
+
+
+    repeatChecking2(oldValue: any, obj2: any, variableName: string, currentTag: any, newTagIndex: any, testD: any[]) {
+        console.log(this.forTags, testD);
         if (oldValue) {
+            // this.test(testD);
+            // setTimeout(() => {
+            //     testD[0].innerHTML = 33333;
+            // }, 100);
             setInterval(() => {
-                this.forTags[0].newTags[0].innerHTML = '5555';
+                // console.log(tags);
+                // tags[this.forTags[0].mainTagIndex] = Math.random();
+                // console.log(this.tags);
+                // testD[0].innerHTML = 33333;
+                // testD[0].innerHTML = '22222';
+                // this.forTags[0].newTags[0].innerHTML = '5555';
                 obj2 = this.instance[variableName];
                 if (JSON.stringify(obj2) !== JSON.stringify(oldValue)) {
                     // console.log(obj2);
@@ -377,15 +422,35 @@ export class Core {
                     //     bigger = oldValue;
                     //     smaller = obj2;
                     // }
-                    if (oldValue.length > obj2.length) {
-                        for (let i = 0; i < oldValue.length - obj2.length; i++) {
-                            this.forTags[newTagIndex].newTags[obj2.length + i].remove();
+                    var tags = [];
+                    for (let i = 0; i < this.mainElement.childNodes.length; i++) {
+                        if (this.mainElement.childNodes[i].nodeType !== 3) {
+                            tags.push(this.mainElement.childNodes[i]);
                         }
                     }
-                    for (let i = 0; i < obj2.length; i++) {
-                        if (obj2[i] !== oldValue[i]) {
-                            console.log(444);
-                            this.forTags[newTagIndex].newTags[i].innerHTML = obj2[i];
+                    console.log(oldValue, obj2, tags);
+                    if (oldValue.length > obj2.length) {
+                        for (let i = 0; i < oldValue.length - obj2.length; i++) {
+                            console.log(this.forTags[0].mainTagIndex + oldValue.length - 1 + i);
+                            tags[this.forTags[0].mainTagIndex + oldValue.length - 1 + i].remove();
+                            // this.forTags[newTagIndex].newTags[obj2.length + i].remove();
+                        }
+                    } else if (oldValue.length < obj2.length) {
+                        for (let i = 0; i < obj2.length - oldValue.length; i++) {
+                            var newD = currentTag.cloneNode(true);
+                            newD.innerHTML = obj2[oldValue.length + i];
+                            this.mainElement.insertBefore(newD, tags[this.forTags[0].mainTagIndex + oldValue.length - 1].nextSibling);
+                            // tags[this.forTags[0].mainTagIndex + oldValue.length - 1 + i].remove();
+                            // this.forTags[newTagIndex].newTags[obj2.length + i].remove();
+                        }
+                    } else {
+                        for (let i = 0; i < obj2.length; i++) {
+                            if (obj2[i] !== oldValue[i]) {
+                                console.log(444);
+                                // testD[i].innerHTML = obj2[i];
+                                tags[this.forTags[0].mainTagIndex + i].innerHTML = obj2[i];
+                                // this.forTags[newTagIndex].newTags[i].innerHTML = obj2[i];
+                            }
                         }
                     }
                     console.log(this.forTags);
@@ -426,7 +491,7 @@ export class Core {
                     console.log(`Value of ${oldValue} to ${obj2}`);
                     oldValue = obj2.slice();
                 }
-            }, 10);
+            }, 50);
         }
     }
 

@@ -41,9 +41,15 @@ export class LoginComponent {
     constructor() {
     }
 
+    onClickBox2() {
+        // this.arr[0] = Math.round(+(Math.random() * 100).toString());
+        this.arr.push(Math.random() * 100);
+    }
+
     onClickBox(x: number, y: number) {
         // this.arr.pop();
-        this.arr[0] = 6;
+        // this.arr[0] = Math.round(+(Math.random() * 100).toString());
+        this.arr.pop();
         // this.aTag  = (Math.random() * 10).toString();
         // console.log(this.aTag);
         // console.log(x, y);
