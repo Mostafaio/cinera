@@ -429,10 +429,11 @@ export class Core {
                         }
                     }
                     console.log(oldValue, obj2, tags);
+                    console.log(this.forTags[0].mainTagIndex);
                     if (oldValue.length > obj2.length) {
                         for (let i = 0; i < oldValue.length - obj2.length; i++) {
-                            console.log(this.forTags[0].mainTagIndex + oldValue.length - 1 + i);
-                            tags[this.forTags[0].mainTagIndex + oldValue.length - 1 + i].remove();
+                            console.log(this.forTags[0].mainTagIndex + oldValue.length - 1 - i);
+                            tags[this.forTags[0].mainTagIndex + oldValue.length - 1 - i].remove();
                             // this.forTags[newTagIndex].newTags[obj2.length + i].remove();
                         }
                     } else if (oldValue.length < obj2.length) {

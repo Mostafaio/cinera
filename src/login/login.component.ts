@@ -43,7 +43,16 @@ export class LoginComponent {
 
     onClickBox2() {
         // this.arr[0] = Math.round(+(Math.random() * 100).toString());
-        this.arr.push(Math.random() * 100);
+        for (let i = 0; i < 30; i++) {
+            this.arr.push(Math.random() * 100);
+        }
+        console.log(this.arr);
+        setTimeout(() => {
+            for (let i = 0; i < 30; i++) {
+                this.arr.pop();
+            }
+        }, 1000);
+        console.log(this.arr);
     }
 
     onClickBox(x: number, y: number) {
