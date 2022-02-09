@@ -8,7 +8,7 @@ export class Core {
     tags: { tag: any, xpath: string, tagAfterEval: any }[] = [];
     mainElement: any;
     tempTags: any[] = [];
-    forTags: { mainTagIndex: number, newTags: any[] }[] = [];
+    forTags: { mainTagIndex: number, newTags: any[], tagCode: number }[] = [];
     instance: any;
 
 
@@ -22,6 +22,7 @@ export class Core {
         // console.log(instance.imageSource);
         // console.log(instance);
         // this.tags[2].tagAfterEval.innerHTML = 3333;
+        console.log(this.tags);
         for (let i = 0; i < this.tags.length; i++) {
             const currentTag = this.tags[i].tagAfterEval.cloneNode(true);
             var tagAttributes = currentTag.attributes;
@@ -144,34 +145,6 @@ export class Core {
             }
             // console.log(instance[funcVariables[i]]);
             isTarget = true;
-        }
-        let htmlFuncs: any = currentTag.textContent.match(/(?<=\{{).+?(?=\}})/g);
-        // console.log(htmlFuncs);
-        // for (let i = 0; i < funcs.length; i++) {
-        if (htmlFuncs) {
-            for (let j = 0; j < htmlFuncs.length; j++) {
-                htmlFuncs[j] = htmlFuncs[j].replace(/ /g, '');
-                var dd = htmlFuncs[j].split('(');
-                if (dd.length > 1) {
-                    // @ts-ignore
-                    var ggf = htmlFuncs[j].match(/(?<=\().+?(?=\))/g);
-                    if (ggf) {
-                        ggf = ggf[0].split(',');
-                        for (let b = 0; b < ggf.length; b++) {
-                            if (this.isJson(ggf[b])) {
-                                ggf[b] = JSON.parse(ggf[b].toLowerCase());
-                            }
-                            if (ggf[b].toString().replace(/ /g, '') === '$event') {
-                                ggf[b] = event;
-                            }
-                        }
-                    }
-                }
-
-                currentTag.textContent = instance[dd[0]].apply(instance, ggf);
-                isTarget = true;
-                // instance[dd[0]].apply(instance, ggf);
-            }
         }
         // var regex = "\{{\\s*" + funcVariables[i] + "\\s*}}"; // \s*
         // if (currentTag.textContent) {
@@ -308,13 +281,21 @@ export class Core {
                     currentTag.removeAttribute(tagAttributes[j].nodeName);
                     currentTag.setAttribute('ngFor', 'true');
                     // console.log(this.mainElement);
+                    const tagCode = Math.random() * 10000;
+                    realTag.ffor = ff[1];
+                    currentTag.ffor = ff[1];
+                    realTag.havij = tagCode;
+                    currentTag.havij = tagCode;
+                    realTag.forIndex = 0;
+                    currentTag.forIndex = 0;
                     this.forTags.push({
                         mainTagIndex: index,
+                        tagCode: tagCode,
                         newTags: []
                     });
 
                     var testD = [];
-                    currentTag.innerHTML = arr[0];
+                    // currentTag.innerHTML = arr[0];
 
                     for (let i = 1; i < arr.length; i++) {
                         // console.log(currentTag);
@@ -322,10 +303,16 @@ export class Core {
                             // var instancePrototype = Object.getPrototypeOf(instance);
                             // var parent = document.getElementsByTagName(instancePrototype.obj.selector);
                             // if (parent.length > 0) {
-                            var cloneNode = currentTag.cloneNode(true);
-                            var newD = document.createElement('p');
+                            // var cloneNode = currentTag.cloneNode(true);
+                            // var newD = currentTag.cloneNode(true);
+                            var newD: any = document.createElement('p');
+                            newD.setAttribute('aaa', '3333');
+                            newD.ffor = ff[1];
+                            newD.ffor = ff[1];
+                            newD.innerHTML = currentTag.innerHTML;
+                            newD.forIndex = i;
                             // newD.replaceWith(cloneNode);
-                            newD.innerHTML = arr[i];
+                            // newD.innerHTML = arr[i];
                             testD.push(newD);
                             this.forTags[this.forTags.length - 1].newTags.push(newD);
                             if (i === 1) {
@@ -359,6 +346,44 @@ export class Core {
                     // currentTag.remove();
                     // }
                 }
+            }
+        }
+
+        let htmlFuncs: any = currentTag.textContent.match(/(?<=\{{).+?(?=\}})/g);
+        // console.log(htmlFuncs);
+        // for (let i = 0; i < funcs.length; i++) {
+        if (htmlFuncs) {
+            console.log([currentTag]);
+            for (let j = 0; j < htmlFuncs.length; j++) {
+                htmlFuncs[j] = htmlFuncs[j].replace(/ /g, '');
+                var dd = htmlFuncs[j].split('(');
+                if (dd.length > 1) {
+                    // @ts-ignore
+                    var ggf = htmlFuncs[j].match(/(?<=\().+?(?=\))/g);
+                    if (ggf) {
+                        ggf = ggf[0].split(',');
+                        for (let b = 0; b < ggf.length; b++) {
+                            if (this.isJson(ggf[b])) {
+                                ggf[b] = JSON.parse(ggf[b].toLowerCase());
+                            }
+                            if (ggf[b].toString().replace(/ /g, '') === '$event') {
+                                ggf[b] = event;
+                            }
+                        }
+                    }
+                }
+                if (realTag.ffor) {
+                    // console.log(currentTag.ffor + '[' + currentTag.forIndex + ']');
+                    // console.log(instance['arr2'][2]);
+                    // console.log(instance[currentTag.ffor][currentTag.forIndex]);
+                    currentTag.textContent = instance[realTag.ffor][realTag.forIndex];
+                } else {
+                    // currentTag.textContent = instance[dd[0]].apply(instance, ggf);
+                }
+                console.log(currentTag);
+
+                isTarget = true;
+                // instance[dd[0]].apply(instance, ggf);
             }
         }
 
@@ -397,9 +422,22 @@ export class Core {
     //     }
     // }
 
+    getNodeIndex(node: any) {
+        var index = 0;
+        for (let i = 0; i < this.mainElement.children.length; i++) {
+            if (this.mainElement.children[i].havij === node.havij) {
+                index = i;
+            }
+        }
+        return index;
+    }
 
     repeatChecking2(oldValue: any, obj2: any, variableName: string, currentTag: any, newTagIndex: any, testD: any[]) {
-        console.log(this.forTags, testD);
+        // console.log(this.forTags, testD);
+        // console.log(newTagIndex);
+        // console.log(currentTag.havij);
+        // console.log([currentTag]);
+        console.log(Object.assign({}, this.mainElement.children));
         console.log(newTagIndex);
         if (oldValue) {
             // this.test(testD);
@@ -419,7 +457,7 @@ export class Core {
                     let difference = obj2.filter((x: any) => !oldValue.includes(x));
                     // let bigger = obj2;
                     // let smaller = oldValue;
-                    // if (bigger.length < oldValue.length) {
+                    // if (bigger.length < oldValue.length) {dassadasdasdas
                     //     bigger = oldValue;
                     //     smaller = obj2;
                     // }
@@ -430,18 +468,19 @@ export class Core {
                         }
                     }
                     console.log(oldValue, obj2, tags);
-                    console.log(this.forTags[newTagIndex].mainTagIndex, newTagIndex);
+                    console.log(newTagIndex, newTagIndex);
                     if (oldValue.length > obj2.length) {
+                        newTagIndex = this.getNodeIndex(currentTag);
                         for (let i = 0; i < oldValue.length - obj2.length; i++) {
-                            console.log(this.forTags[newTagIndex].mainTagIndex + oldValue.length - 1 - i);
-                            tags[this.forTags[newTagIndex].mainTagIndex + oldValue.length - 1 - i].remove();
+                            tags[newTagIndex + oldValue.length - 1 - i].remove();
                             // this.forTags[newTagIndex].newTags[obj2.length + i].remove();
                         }
                     } else if (oldValue.length < obj2.length) {
+                        newTagIndex = this.getNodeIndex(currentTag);
                         for (let i = 0; i < obj2.length - oldValue.length; i++) {
                             var newD = currentTag.cloneNode(true);
                             newD.innerHTML = obj2[oldValue.length + i];
-                            this.mainElement.insertBefore(newD, tags[this.forTags[newTagIndex].mainTagIndex + oldValue.length - 1].nextSibling);
+                            this.mainElement.insertBefore(newD, tags[newTagIndex + oldValue.length - 1].nextSibling);
                             // tags[this.forTags[0].mainTagIndex + oldValue.length - 1 + i].remove();
                             // this.forTags[newTagIndex].newTags[obj2.length + i].remove();
                         }
@@ -450,7 +489,7 @@ export class Core {
                             if (obj2[i] !== oldValue[i]) {
                                 console.log(444);
                                 // testD[i].innerHTML = obj2[i];
-                                tags[this.forTags[newTagIndex].mainTagIndex + i].innerHTML = obj2[i];
+                                tags[newTagIndex + i].innerHTML = obj2[i];
                                 // this.forTags[newTagIndex].newTags[i].innerHTML = obj2[i];
                             }
                         }

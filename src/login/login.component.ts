@@ -37,8 +37,12 @@ export class LoginComponent {
     isShow = false;
     inpVal = '';
     arr = [1, 2, 3];
+    arr2 = [5, 6, 7];
 
     constructor() {
+        // setInterval(() => {
+        //     this.arr2.push(Math.random() * 100);
+        // }, 1000);
     }
 
     onClickBox2() {

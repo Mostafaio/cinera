@@ -2,6 +2,7 @@ import {LoginComponent} from "./src/login/login.component";
 import {RegisterComponent} from "./src/register/register.component";
 import {Core} from "./@cinera/core";
 import {ProfileComponent} from "./src/profile/profile.component";
+import {MainCore} from "./@cinera/main-core";
 
 export class Main {
     title: string = 'aaaa';
@@ -102,8 +103,14 @@ var loginInstance = new bootstrap();
 // var ad = new declarations[1]();
 // var ad2 = new declarations[1]();
 const core = new Core();
+const mainCore = new MainCore();
 
 
+mainCore.buildNewComponent(loginInstance).then((bootstrapHTML) => {
+    document.body.appendChild(bootstrapHTML);
+    // loop(loginInstance, core);
+    // attachHTMLToPage();
+});
 
 // const obj = {
 //     localA: loginInstance.havij,
@@ -144,18 +151,18 @@ loginInstance.havij = 111
 loginInstance.havij = 'aaa';
 // console.log(obj.a);
 
-core.buildNewComponent(loginInstance).then((bootstrapHTML) => {
-    // console.log(bootstrapHTML);
-    // console.log(loginInstance.obj);
-    // var wrapper: any = document.createElement('div');
-    // wrapper.innerHTML = bootstrapHTML;
-    document.body.appendChild(bootstrapHTML);
-    loop(loginInstance, core);
-    attachHTMLToPage();
-
-    // core.setEvents(loginInstance);
-    // attachHTMLToPage();
-});
+// core.buildNewComponent(loginInstance).then((bootstrapHTML) => {
+//     // console.log(bootstrapHTML);
+//     // console.log(loginInstance.obj);
+//     // var wrapper: any = document.createElement('div');
+//     // wrapper.innerHTML = bootstrapHTML;
+//     document.body.appendChild(bootstrapHTML);
+//     loop(loginInstance, core);
+//     attachHTMLToPage();
+//
+//     // core.setEvents(loginInstance);
+//     // attachHTMLToPage();
+// });
 
 function loop(instance: any, mainCore: any) {
     setTimeout(() => {
@@ -163,15 +170,6 @@ function loop(instance: any, mainCore: any) {
         loop(instance, mainCore);
     }, 100);
 }
-
-// core.buildComponent(ad).then((aaa) => {
-//
-// });
-// core.buildComponent(ad2).then((aaa) => {
-//
-// });
-
-// console.log(core.htmlSource);
 
 function attachHTMLToPage() {
     for (let i = 0; i < declarations.length; i++) {
