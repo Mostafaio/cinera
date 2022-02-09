@@ -33,13 +33,30 @@ import {Component} from "../../@cinera/component";
 export class LoginComponent {
     havij = 'Man havij hastm!';
     aTag = 'https://poralist.com';
-    imageSource = 'https://api.poralist.com/api-v1/files/file-test/public/logo.png';
+    imageSourceeee = 'https://api.poralist.com/api-v1/files/file-test/public/logo.png';
     isShow = false;
-    inpVal = '';
+    inpVal = 'fgfgf';
     arr = [1, 2, 3];
     arr2 = [5, 6, 7];
+    testVar = 10;
+    objTest = {
+        a: 20
+    };
+    randImage = false;
 
     constructor() {
+        setTimeout(() => {
+            // this.testVar = 20;
+            // this.objTest.a = 50;
+            // this.imageSourceeee = '3423432432423';
+            console.log(11);
+        }, 2000);
+        setTimeout(() => {
+            // this.testVar = 20;
+            // this.objTest.a = 50;
+            // this.imageSourceeee = '5465656565';
+            console.log(11);
+        }, 4000);
         // setInterval(() => {
         //     this.arr2.push(Math.random() * 100);
         // }, 1000);
@@ -59,25 +76,38 @@ export class LoginComponent {
         // console.log(this.arr);
     }
 
-    onClickBox(x: number, y: number) {
+    onClickBox(x: number) {
+
+        this.randImage = !this.randImage;
         // this.arr.pop();
         // this.arr[0] = Math.round(+(Math.random() * 100).toString());
-        this.arr.pop();
+        // this.arr.pop();
+        // console.log(333);
+        // this.imageSourceeee = (Math.random() * 10).toString();
+        // console.log(this.imageSourceeee);
         // this.aTag  = (Math.random() * 10).toString();
         // console.log(this.aTag);
         // console.log(x, y);
-        if (x === 2) {
-            this.imageSource = 'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8Y2hhbmdlfGVufDB8fDB8fA%3D%3D&w=1000&q=80';
+        if (this.randImage) {
+            this.imageSourceeee = 'https://images.unsplash.com/photo-1453728013993-6d66e9c9123a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8Y2hhbmdlfGVufDB8fDB8fA%3D%3D&w=1000&q=80';
         } else {
-            this.imageSource = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
+            this.imageSourceeee = 'https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png';
         }
         // console.log(this.imageSource);
         // console.log(this.arr);
         // alert('havij' + x);
     }
 
-    getImageSource(x: any, y: any) {
-        return this.imageSource;
+
+
+    onClickR(x: number, status: boolean): number {
+        console.log(222);
+        this.isShow = !this.isShow;
+        return this.testVar * 10;
+    }
+
+    getImageSource() {
+        return this.imageSourceeee;
     }
 
     getTestVal() {
@@ -85,7 +115,12 @@ export class LoginComponent {
     }
 
     getImageSource2(x: number) {
-        return this.imageSource + 5555 + x;
+        return this.imageSourceeee + 5555 + x;
+    }
+
+    getImageSource3(val: any, fr: any) {
+        console.log(val);
+        console.log(fr);
     }
 
     test() {
@@ -93,7 +128,9 @@ export class LoginComponent {
     }
 
     writeInp(e: any, t: any) {
+        console.log(t);
         this.inpVal = t.target.value;
+        this.havij = this.inpVal;
         console.log(this.inpVal);
     }
 }

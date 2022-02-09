@@ -1,12 +1,13 @@
-<button (click)="onClickBox(2, true);getImageSource(inpVal);havij = 2" *ngIf="2222">Change 1</button>
-<button (click)="onClickBox(1, false)" *ngIf="2222">Change 2</button>
-<button (click)="onClickBox2()" *ngIf="2222">Change 3</button>
-<a [href]="aTag">asdsad</a>
+<button (click)="onClickR(2,true);getImageSource3(inpVal, havij);havij = 2;getImageSource3(inpVal, havij)">Change 1</button>
+<button (click)="onClickR(1, false)">Change 2</button>
+<button (click)="onClickBox2()">Change 3</button>
+<a [href]="havij">asdsad</a>
 <p>gggg</p>
 <p *ngFor="let ar of arr" style="color: rgba(165,15,165,0.67)">{{ havij }}</p>
-<p *ngIf="isShow">isShow {{ isShow }}</p>
+<p *ngIf="isShow">gogoooli {{ isShow }}</p>
+<p>dasdsad {{ isShow }}</p>
 <button (click)="onClickBox(3)">hhh</button>
-<p *ngFor="let ar of arr2" style="color: rgba(165,15,165,0.67)">{{ ar + 2 }}</p>
+<p *ngFor="let ar of arr2" style="color: rgba(165,15,165,0.67)">{{ getImageSource() }}</p>
 <input type="text" (keyup)="writeInp(22, $event)">
 <p>{{ inpVal }}</p>
 <button (click)="onClickBox(5)">ggggg</button>
