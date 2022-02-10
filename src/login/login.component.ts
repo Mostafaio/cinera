@@ -70,14 +70,20 @@ export class LoginComponent {
         // };
 
         // @ts-ignore
-        window['kiko'] = () => {
-            // @ts-ignore
-            // window['havij']('22', '555');
-            // console.log('2222');
-        };
+        window['aobj'] = {};
 
         // @ts-ignore
-        window['getImageSource2'] = (x) => {
+
+        window.aobj['kiko'] = () => {
+            // @ts-ignore
+            // window['havij']('22', '555');
+            console.log('2222');
+        };
+
+        // Function("return " + 'aobj.kiko()')();
+
+        // @ts-ignore
+        window['getImageSource6'] = (x) => {
             // @ts-ignore
             return this.getImageSource2(x);
         };
@@ -134,7 +140,7 @@ export class LoginComponent {
     }
 
     getImageSource() {
-        return this.imageSourceeee;
+        return this.havij;
     }
 
     getTestVal() {
@@ -154,9 +160,13 @@ export class LoginComponent {
         console.log('hhhhhh');
     }
 
+    getBool(x: any) {
+        return x;
+    }
+
     writeInp(e: any, t: any) {
         console.log(t);
-        this.inpVal = t.target.value;
+        // this.inpVal = t.target.value;
         // this.havij = this.inpVal;
         console.log(this.inpVal);
     }
