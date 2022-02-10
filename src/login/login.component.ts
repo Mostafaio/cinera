@@ -86,6 +86,9 @@ export class LoginComponent {
     test4(havij: any) {
         return havij;
     }
+    test5() {
+        return 'test5 hastam';
+    }
 
     onClickBox2() {
         // this.arr[0] = Math.round(+(Math.random() * 100).toString());

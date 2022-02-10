@@ -532,7 +532,7 @@ export class Core {
                     console.log(`Value of ${oldValue} to ${obj2}`);
                     oldValue = obj2.slice();
                 }
-            }, 50);
+            }, 10);
         }
     }
 
@@ -588,7 +588,6 @@ export class Core {
     getHavij(tagAttributes: any, j: any, funcVariables: any, currentTag: any, instance: any) {
 
     }
-
 
     buildComponent(instance: any) {
         var instancePrototype = Object.getPrototypeOf(instance);

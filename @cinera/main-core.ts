@@ -26,37 +26,49 @@ export class MainCore {
             // @ts-ignore
             window.aobj[classVariables[i]] = this.instance[classVariables[i]];
         }
+        for (let i = 0; i < classFunctions.length; i++) {
+            // @ts-ignore
+            window.aobj[classFunctions[i]] = this.instance[classFunctions[i]];
+            // window['classF'] = () => {
+            //     console.log(7878);
+                // @ts-ignore
+                // return this.getImageSource2(x);
+            // };
+        }
         // @ts-ignore
         // console.log(window);
         for (let m = 0; m < classVariables.length; m++) {
-                var ingg = instance[classVariables[m]];
-                if (typeof ingg === 'object') {
-                    if (ingg.length) {
-                        ingg = ingg.slice();
-                    } else {
-                        ingg = Object.assign({}, ingg);
-                    }
+            var ingg = instance[classVariables[m]];
+            if (typeof ingg === 'object') {
+                if (ingg.length) {
+                    ingg = ingg.slice();
+                } else {
+                    ingg = Object.assign({}, ingg);
                 }
-                var changes = this.changeDetection(ingg, classVariables[m]);
+            }
+            var changes = this.changeDetection(ingg, classVariables[m]);
         }
         // for (let m = 0; m < classFunctions.length; m++) {
-        //         // @ts-ignore
-        //         this.tags[i].invFunctions.push(classFunctions[m]);
-        //         var value = '';
-        //         var dd = split[k].split('(');
-        //         if (dd.length > 1) {
-        //             dd[1] = dd[1].substr(0, dd[1].length - 1);
-        //             value = instance[dd[0]].apply(instance, dd[1].split(','));
-        //         } else {
-        //             value = instance[split[k]];
-        //         }
-        //         var ingg = instance[dd[0]].apply(instance, dd[1].split(','));
-        //         if (typeof ingg === 'object') {
-        //             ingg = ingg.slice();
-        //         }
-        //         var changes = this.changeFunctionDetection(ingg, dd[0], dd[1]);
-        //         this.tags[i].changes.push(changes);
+            // @ts-ignore
+            // this.tags[m].invFunctions.push(classFunctions[m]);
+            // console.log(this.tags[m].invFunctions.push);
+            var value = '';
+            // var dd = split[k].split('(');
+            // if (dd.length > 1) {
+            //     dd[1] = dd[1].substr(0, dd[1].length - 1);
+            //     value = instance[dd[0]].apply(instance, dd[1].split(','));
+            // } else {
+            //     value = instance[split[k]];
+            // }
+            // var ingg = instance[dd[0]].apply(instance, dd[1].split(','));
+            // if (typeof ingg === 'object') {
+            //     ingg = ingg.slice();
+            // }
+            // var changes = this.changeFunctionDetection(ingg, dd[0], dd[1]);
+            // this.tags[i].changes.push(changes);
         // }
+
+
         // this.instance.havij = '5';
         // console.log(classFunctions);
         // console.log(classVariables);
@@ -224,12 +236,22 @@ export class MainCore {
             // console.log(instance[funcVariables[i]]);
             isTarget = true;
         }
+        // for (let f = 0; f < classFunctions.length; f++) {
+        //     var regex = "\{{\\s*" + classFunctions[f] + "\\s*}}"; // \s*
+        //     console.log(this.tags[index].current.textContent);
+        //     if (this.tags[index].current.textContent) {
+        // console.log(currentTag.textContent.replace(new RegExp(regex, "g"), instance[variables[i]]));
+        // this.tags[index].current.textContent = this.tags[index].current.textContent.replace(new RegExp(regex, "g"), this.instance[classFunctions[f]]);
+        // console.log(currentTag.textContent.replace(new RegExp(regex, "g"), 'golabi'));
+        // console.log([currentTag]);
+        // }
+        // console.log(instance[funcVariables[i]]);
+        //     isTarget = true;
+        // }
 
 
         if (this.tags[index].org.attributes.length > 0) {
             for (let j = 0; j < this.tags[index].org.attributes.length; j++) {
-
-
                 // directives with brackets []
                 if (this.tags[index].org.attributes[j].nodeName.match(/\[.*?\]/)) {
                     isTarget = true;
@@ -259,9 +281,11 @@ export class MainCore {
                     console.log(Function("return " + withoutSpace)());
                     for (let i = 0; i < valSplit.length; i++) {
                         var dd = valSplit[i].split('(');
-                        // console.log(dd);
+                        console.log(dd);
                         if (dd.length > 1) {
                             dd[1] = dd[1].substr(0, dd[1].length - 1);
+                            console.log(this.instance);
+                            console.log(dd[0]);
                             value = this.instance[dd[0]].apply(this.instance, dd[1].split(','));
                         } else {
                             const ddSplit = this.splitMulti(dd[0], ['+', '-', '/', '*', +'%']);
