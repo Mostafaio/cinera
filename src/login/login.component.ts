@@ -43,29 +43,54 @@ export class LoginComponent {
         a: 20
     };
     randImage = false;
+    hav = 'dsds';
 
     constructor() {
         setTimeout(() => {
             // this.testVar = 20;
             // this.objTest.a = 50;
             // this.imageSourceeee = '3423432432423';
-            console.log(11);
         }, 2000);
         setTimeout(() => {
             // this.testVar = 20;
             // this.objTest.a = 50;
             // this.imageSourceeee = '5465656565';
+            // this.havij = '5555';
+            // @ts-ignore
+            window['inpVal'] = this.inpVal;
             console.log(11);
         }, 4000);
         // setInterval(() => {
         //     this.arr2.push(Math.random() * 100);
         // }, 1000);
+
+        // window['havij'] = (e: any, d: any) => {
+        //     console.log(e, d);
+        //     // this.test();
+        // };
+
+        // @ts-ignore
+        window['kiko'] = () => {
+            // @ts-ignore
+            // window['havij']('22', '555');
+            // console.log('2222');
+        };
+
+        // @ts-ignore
+        window['getImageSource2'] = (x) => {
+            // @ts-ignore
+            return this.getImageSource2(x);
+        };
+    }
+
+    test4(havij: any) {
+        return havij;
     }
 
     onClickBox2() {
         // this.arr[0] = Math.round(+(Math.random() * 100).toString());
         // for (let i = 0; i < 30; i++) {
-            this.arr.push(Math.random() * 100);
+        this.arr.push(Math.random() * 100);
         // }
         // console.log(this.arr);
         // setTimeout(() => {
@@ -99,7 +124,6 @@ export class LoginComponent {
     }
 
 
-
     onClickR(x: number, status: boolean): number {
         console.log(222);
         this.isShow = !this.isShow;
@@ -130,7 +154,7 @@ export class LoginComponent {
     writeInp(e: any, t: any) {
         console.log(t);
         this.inpVal = t.target.value;
-        this.havij = this.inpVal;
+        // this.havij = this.inpVal;
         console.log(this.inpVal);
     }
 }

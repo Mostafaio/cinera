@@ -112,6 +112,8 @@ mainCore.buildNewComponent(loginInstance).then((bootstrapHTML) => {
     // attachHTMLToPage();
 });
 
+// @ts-ignore
+
 // const obj = {
 //     localA: loginInstance.havij,
 //     get a() {
@@ -145,10 +147,10 @@ setTimeout(()=> {
     obj2.foo = "I have changed again.";
 }, 1000);
 
-loginInstance.havij = 111
+// loginInstance.havij = 111
 // obj.a = 5;
 // obj.a = 6;
-loginInstance.havij = 'aaa';
+// loginInstance.havij = 'aaa';
 // console.log(obj.a);
 
 // core.buildNewComponent(loginInstance).then((bootstrapHTML) => {

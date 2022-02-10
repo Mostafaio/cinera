@@ -18,7 +18,46 @@ export class MainCore {
         var classFunctions = Object.getOwnPropertyNames(instancePrototype);
         var classVariables = Object.keys(instance);
         var classFuncVars = classVariables.concat(classFunctions);
-        this.instance.havij = '5';
+        // @ts-ignore
+        window['aobj'] = {};
+        for (let i = 0; i < classVariables.length; i++) {
+            // @ts-ignore
+            // console.log(window['aobj']);
+            // @ts-ignore
+            window.aobj[classVariables[i]] = this.instance[classVariables[i]];
+        }
+        // @ts-ignore
+        // console.log(window);
+        for (let m = 0; m < classVariables.length; m++) {
+                var ingg = instance[classVariables[m]];
+                if (typeof ingg === 'object') {
+                    if (ingg.length) {
+                        ingg = ingg.slice();
+                    } else {
+                        ingg = Object.assign({}, ingg);
+                    }
+                }
+                var changes = this.changeDetection(ingg, classVariables[m]);
+        }
+        // for (let m = 0; m < classFunctions.length; m++) {
+        //         // @ts-ignore
+        //         this.tags[i].invFunctions.push(classFunctions[m]);
+        //         var value = '';
+        //         var dd = split[k].split('(');
+        //         if (dd.length > 1) {
+        //             dd[1] = dd[1].substr(0, dd[1].length - 1);
+        //             value = instance[dd[0]].apply(instance, dd[1].split(','));
+        //         } else {
+        //             value = instance[split[k]];
+        //         }
+        //         var ingg = instance[dd[0]].apply(instance, dd[1].split(','));
+        //         if (typeof ingg === 'object') {
+        //             ingg = ingg.slice();
+        //         }
+        //         var changes = this.changeFunctionDetection(ingg, dd[0], dd[1]);
+        //         this.tags[i].changes.push(changes);
+        // }
+        // this.instance.havij = '5';
         // console.log(classFunctions);
         // console.log(classVariables);
         return this.getHTMLSource(tempHtmlLoc).then((htmlSource: string) => {
@@ -81,7 +120,7 @@ export class MainCore {
                                                 ingg = Object.assign({}, ingg);
                                             }
                                         }
-                                        console.log(this.tags[i]);
+                                        // console.log(this.tags[i]);
                                         var changes = this.changeDetection(ingg, classVariables[m]);
                                         this.tags[i].changes.push(changes);
                                     }
@@ -128,7 +167,7 @@ export class MainCore {
             let obj2 = this.instance[varName];
             // obj2 = this.instance[variableName];
             if (JSON.stringify(obj2) !== JSON.stringify(oldValue)) {
-                console.log(oldValue, obj2);
+                // console.log(oldValue, obj2);
                 var tags = [];
                 // for (let i = 0; i < this.mainElement.childNodes.length; i++) {
                 //     if (this.mainElement.childNodes[i].nodeType !== 3) {
@@ -144,6 +183,8 @@ export class MainCore {
                 } else {
                     oldValue = obj2;
                 }
+                // @ts-ignore
+                window.aobj[varName] = oldValue;
                 for (let i = 0; i < this.tags.length; i++) {
                     var founds = this.tags[i].invVariables.filter((v: any) => v === varName);
                     if (founds.length > 0) {
@@ -196,9 +237,29 @@ export class MainCore {
 
                     const valSplit = hh.split(';');
                     var value = '';
+                    console.log(hh);
+                    var withoutSpace = hh.replace(/ /g, '');
+                    var aa = 'adasd';
+                    console.log('havok 4545 adasd'.replace(/\{{aa}}/g, 'golabi'));
+                    console.log('.aobj.aobj.haaaaa'.replace(/\.aobj\.aobj/g, '.aobj'));
+                    for (let m = 0; m < classVariables.length; m++) {
+                        var regex = "\s*" + classVariables[m] + "\s*";
+                        withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), 'aobj.' + classVariables[m]);
+                        withoutSpace = withoutSpace.replace(/aobj\.aobj/g, 'aobj');
+                    }
+                    for (let m = 0; m < classFunctions.length; m++) {
+                        var regex = "\s*" + classFunctions[m] + "\s*";
+                        withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), 'aobj.' + classFunctions[m]);
+                        withoutSpace = withoutSpace.replace(/aobj\.aobj/g, 'aobj');
+                        withoutSpace = withoutSpace.replace(/aaobj\.obj/g, 'aobj');
+                    }
+                    // console.log(withoutSpace);
+                    // console.log(this.splitMulti(withoutSpace, ['+', '-', '/', '*', +'%']));
+                    console.log(withoutSpace);
+                    console.log(Function("return " + withoutSpace)());
                     for (let i = 0; i < valSplit.length; i++) {
                         var dd = valSplit[i].split('(');
-                        console.log(dd);
+                        // console.log(dd);
                         if (dd.length > 1) {
                             dd[1] = dd[1].substr(0, dd[1].length - 1);
                             value = this.instance[dd[0]].apply(this.instance, dd[1].split(','));
@@ -207,8 +268,8 @@ export class MainCore {
                             const ddSplit2 = this.splitMulti(dd[0], ['+', '-', '/', '*', +'%']);
                             const ddSplitOperations = this.splitMulti(dd[0], ddSplit);
 
-                            console.log(ddSplitOperations);
-                            console.log(ddSplit);
+                            // console.log(ddSplitOperations);
+                            // console.log(ddSplit);
                             for (let m = 0; m < classVariables.length; m++) {
                                 for (let l = 0; l < ddSplit.length; l++) {
                                     if (ddSplit[l] === classVariables[m]) {
@@ -235,7 +296,7 @@ export class MainCore {
                             // console.log(ddSplit);
                             value = this.instance[valSplit[i]];
                         }
-                        console.log(valSplit[i]);
+                        // console.log(valSplit[i]);
 
                     }
 
@@ -295,11 +356,11 @@ export class MainCore {
                     for (let k = 0; k < classVariables.length; k++) {
                         ff = ff.replace(classVariables[k], "this.instance." + classVariables[k]);
                     }
-                    console.log(ff);
+                    // console.log(ff);
                     var value2 = eval(ff);
-                    console.log(value2);
+                    // console.log(value2);
                     // var value = Function('"use strict";return (' + ff + ')')();
-                    console.log([this.tags[index].current]);
+                    // console.log([this.tags[index].current]);
                     if (!value2) {
                         const comment = document.createComment(this.tags[index].current.uniqId);
                         this.comments.push(comment);
@@ -420,7 +481,7 @@ export class MainCore {
         // console.log(htmlFuncs);
         // for (let i = 0; i < funcs.length; i++) {
         if (htmlFuncs) {
-            console.log([this.tags[index].current]);
+            // console.log([this.tags[index].current]);
             for (let j = 0; j < htmlFuncs.length; j++) {
                 htmlFuncs[j] = htmlFuncs[j].replace(/ /g, '');
                 var dd = htmlFuncs[j].split('(');
@@ -445,7 +506,7 @@ export class MainCore {
                 // console.log(instance[currentTag.ffor][currentTag.forIndex]);
                 // currentTag.textContent = instance[realTag.ffor][realTag.forIndex];
                 // } else {
-                console.log(dd[0]);
+                // console.log(dd[0]);
                 this.tags[index].current.textContent = this.instance[dd[0]].apply(this.instance, ggf);
                 // }
                 // console.log(currentTag);
