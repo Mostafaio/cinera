@@ -19,24 +19,22 @@ export class MainCore {
         var classVariables = Object.keys(instance);
         var classFuncVars = classVariables.concat(classFunctions);
         // @ts-ignore
-        window['aobj'] = {};
+        window['aobj'] = {
+            variables:{} ,
+            functions:{}
+        };
         for (let i = 0; i < classVariables.length; i++) {
             // @ts-ignore
             // console.log(window['aobj']);
             // @ts-ignore
-            window.aobj[classVariables[i]] = this.instance[classVariables[i]];
+            window.aobj.variables[classVariables[i]] = this.instance[classVariables[i]];
         }
-        for (let i = 0; i < classFunctions.length; i++) {
+        for (let i = 1; i < classFunctions.length; i++) {
             // @ts-ignore
-            window.aobj[classFunctions[i]] = this.instance[classFunctions[i]];
-            // window['classF'] = () => {
-            //     console.log(7878);
-                // @ts-ignore
-                // return this.getImageSource2(x);
-            // };
+            window.aobj.functions[classFunctions[i]] = this.instance[classFunctions[i]];
         }
         // @ts-ignore
-        // console.log(window);
+        console.log(window);
         for (let m = 0; m < classVariables.length; m++) {
             var ingg = instance[classVariables[m]];
             if (typeof ingg === 'object') {
@@ -196,7 +194,7 @@ export class MainCore {
                     oldValue = obj2;
                 }
                 // @ts-ignore
-                window.aobj[varName] = oldValue;
+                window.aobj.variables[varName] = oldValue;
                 for (let i = 0; i < this.tags.length; i++) {
                     var founds = this.tags[i].invVariables.filter((v: any) => v === varName);
                     if (founds.length > 0) {
@@ -256,75 +254,56 @@ export class MainCore {
                 if (this.tags[index].org.attributes[j].nodeName.match(/\[.*?\]/)) {
                     isTarget = true;
                     var hh = this.tags[index].org.attributes[j].value;
-
-                    const valSplit = hh.split(';');
-                    var value = '';
+                    // const valSplit = hh.split(';');
+                    // var value = '';
                     console.log(hh);
-                    var withoutSpace = hh.replace(/ /g, '');
-                    var aa = 'adasd';
-                    console.log('havok 4545 adasd'.replace(/\{{aa}}/g, 'golabi'));
-                    console.log('.aobj.aobj.haaaaa'.replace(/\.aobj\.aobj/g, '.aobj'));
-                    for (let m = 0; m < classVariables.length; m++) {
-                        var regex = "\s*" + classVariables[m] + "\s*";
-                        withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), 'aobj.' + classVariables[m]);
-                        withoutSpace = withoutSpace.replace(/aobj\.aobj/g, 'aobj');
-                    }
-                    for (let m = 0; m < classFunctions.length; m++) {
-                        var regex = "\s*" + classFunctions[m] + "\s*";
-                        withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), 'aobj.' + classFunctions[m]);
-                        withoutSpace = withoutSpace.replace(/aobj\.aobj/g, 'aobj');
-                        withoutSpace = withoutSpace.replace(/aaobj\.obj/g, 'aobj');
-                    }
-                    // console.log(withoutSpace);
-                    // console.log(this.splitMulti(withoutSpace, ['+', '-', '/', '*', +'%']));
+                    const withoutSpace = this.replaceNames(hh);
                     console.log(withoutSpace);
-                    console.log(Function("return " + withoutSpace)());
-                    for (let i = 0; i < valSplit.length; i++) {
-                        var dd = valSplit[i].split('(');
-                        console.log(dd);
-                        if (dd.length > 1) {
-                            dd[1] = dd[1].substr(0, dd[1].length - 1);
-                            console.log(this.instance);
-                            console.log(dd[0]);
-                            value = this.instance[dd[0]].apply(this.instance, dd[1].split(','));
-                        } else {
-                            const ddSplit = this.splitMulti(dd[0], ['+', '-', '/', '*', +'%']);
-                            const ddSplit2 = this.splitMulti(dd[0], ['+', '-', '/', '*', +'%']);
-                            const ddSplitOperations = this.splitMulti(dd[0], ddSplit);
-
-                            // console.log(ddSplitOperations);
-                            // console.log(ddSplit);
-                            for (let m = 0; m < classVariables.length; m++) {
-                                for (let l = 0; l < ddSplit.length; l++) {
-                                    if (ddSplit[l] === classVariables[m]) {
-                                        ddSplit[l] = this.instance[ddSplit[l]];
-                                    }
-                                }
-                            }
-                            let varReplace = 0;
-
-                            for (let m = 0; m < ddSplitOperations.length; m++) {
-                                if (ddSplitOperations[m] === '') {
+                    // for (let i = 0; i < valSplit.length; i++) {
+                    //     var dd = valSplit[i].split('(');
+                    //     console.log(dd);
+                    //     if (dd.length > 1) {
+                    //         dd[1] = dd[1].substr(0, dd[1].length - 1);
+                    //         console.log(this.instance);
+                    //         console.log(dd[0]);
+                    //         value = this.instance[dd[0]].apply(this.instance, dd[1].split(','));
+                    //     } else {
+                    //         const ddSplit = this.splitMulti(dd[0], ['+', '-', '/', '*', +'%']);
+                    //         const ddSplit2 = this.splitMulti(dd[0], ['+', '-', '/', '*', +'%']);
+                    //         const ddSplitOperations = this.splitMulti(dd[0], ddSplit);
+                    //
+                    //         console.log(ddSplitOperations);
+                    //         console.log(ddSplit);
+                            // for (let m = 0; m < classVariables.length; m++) {
+                            //     for (let l = 0; l < ddSplit.length; l++) {
+                            //         if (ddSplit[l] === classVariables[m]) {
+                            //             ddSplit[l] = this.instance[ddSplit[l]];
+                            //         }
+                            //     }
+                            // }
+                            // let varReplace = 0;
+                            //
+                            // for (let m = 0; m < ddSplitOperations.length; m++) {
+                            //     if (ddSplitOperations[m] === '') {
                                     // console.log(typeof (ddSplit[varReplace]));
-                                    const replaced = ddSplit2[varReplace].replace(/'/g, '').replace(/"/g, '');
+                                    // const replaced = ddSplit2[varReplace].replace(/'/g, '').replace(/"/g, '');
                                     // console.log(replaced);
                                     // console.log(ddSplit[varReplace]);
                                     // console.log(ddSplit2[varReplace]);
-                                    ddSplitOperations[m] = ddSplit2[varReplace].replace(replaced, ddSplit[varReplace]);
-                                } else {
-                                    varReplace++;
-                                }
-                            }
+                                    // ddSplitOperations[m] = ddSplit2[varReplace].replace(replaced, ddSplit[varReplace]);
+                                // } else {
+                                //     varReplace++;
+                                // }
+                            // }
                             // console.log(ddSplitOperations.join(' '));
                             // console.log(Function("return " + ddSplitOperations.join(' '))());
                             // console.log(ddSplit);
-                            value = this.instance[valSplit[i]];
-                        }
+                            // value = this.instance[valSplit[i]];
+                        // }
                         // console.log(valSplit[i]);
 
-                    }
-
-                    this.tags[index].current.setAttribute(this.tags[index].org.attributes[j].nodeName.match(/(?<=\[).+?(?=\])/), value);
+                    // }
+                    this.tags[index].current.setAttribute(this.tags[index].org.attributes[j].nodeName.match(/(?<=\[).+?(?=\])/), withoutSpace);
                     this.tags[index].current.removeAttribute(this.tags[index].org.attributes[j].nodeName);
                 }
 
@@ -540,7 +519,27 @@ export class MainCore {
             }
         }
     }
-
+    replaceNames(hh:any){
+        const classVariables = Object.keys(this.instance);
+        const instancePrototype = Object.getPrototypeOf(this.instance);
+        const classFunctions = Object.getOwnPropertyNames(instancePrototype);
+        var withoutSpace = hh.replace(/ /g, '');
+        var aa = 'adasd';
+        console.log('havok 4545 adasd'.replace(/\{{aa}}/g, 'golabi'));
+        console.log('.aobj.aobj.haaaaa'.replace(/\.aobj\.aobj/g, '.aobj'));
+        for (let m = 0; m < classVariables.length; m++) {
+            var regex = "\s*" + classVariables[m] + "\s*";
+            withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), 'aobj\.variables.' + classVariables[m]);
+            withoutSpace = withoutSpace.replace(/aobj\.variables\.aobj\.variables/g, 'aobj\.variables');
+        }
+        for (let m = 0; m < classFunctions.length; m++) {
+            var regex = "\s*" + classFunctions[m] + "\s*";
+            withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), 'aobj.functions.' + classFunctions[m]);
+            withoutSpace = withoutSpace.replace(/aobj\.functions\.aobj\.functions/g, 'aobj\.functions');
+            withoutSpace = withoutSpace.replace(/aaobj\.functions\./g, 'a');
+        }
+        return Function("return " + withoutSpace)();
+    }
     isJson(str: any) {
         try {
             JSON.parse(str);
