@@ -15,6 +15,8 @@ export class MainCore {
         var instancePrototype = Object.getPrototypeOf(instance);
         var path = 'src/' + instancePrototype.mainPath + '/';
         var tempHtmlLoc = path + instancePrototype.obj.templateUrl.replace('./', '');
+        var tempCSSLoc = path + instancePrototype.obj.styleUrl.replace('./', '');
+        console.log(tempCSSLoc);
         var classFunctions = Object.getOwnPropertyNames(instancePrototype);
         var classVariables = Object.keys(instance);
         var classFuncVars = classVariables.concat(classFunctions);
@@ -30,7 +32,6 @@ export class MainCore {
             window.aobj.variables[classVariables[i]] = this.instance[classVariables[i]];
         }
         for (let i = 1; i < classFunctions.length; i++) {
-            console.log([this.instance[classFunctions[i]]], this.instance[classFunctions[i]]);
             // instance[dd[0]].apply(instance, dd[1].split(','))
             // @ts-ignore
             window.aobj.functions[classFunctions[i]] = (a, b, c, d, f, g, h, j, k, l) => {
@@ -70,9 +71,16 @@ export class MainCore {
         // this.tags[i].changes.push(changes);
         // }
 
-
         // this.instance.havij = '5';
         // console.log(classFunctions);
+        this.getHTMLSource(tempCSSLoc).then((cssSource: string) => {
+            const style = document.createElement('style');
+            document.head.appendChild(style);
+            style.type = 'text/css';
+            style.innerHTML = cssSource;
+
+            console.log(cssSource);
+        });
         // console.log(classVariables);
         return this.getHTMLSource(tempHtmlLoc).then((htmlSource: string) => {
             var mainElement = document.createElement(instancePrototype.obj.selector);
@@ -291,6 +299,27 @@ export class MainCore {
             for (let j = 0; j < this.tags[index].org.attributes.length; j++) {
                 // directives with brackets []
                 if (this.tags[index].org.attributes[j].nodeName.match(/\[.*?\]/)) {
+                    if (this.tags[index].org.attributes[j].nodeName === '[ngstyle]') {
+                        const splitNode = this.tags[index].org.attributes[j].value.split('?');
+                        const splitStyles = splitNode[1].split(':');
+                        const condition = this.replaceNames(this.tags[index].org.attributes[j].value.split('?')[0]);
+                        let targetStyles = this.replaceNames(this.tags[index].org.attributes[j].value);
+                        this.setStylesOnElement(targetStyles, this.tags[index].current);
+                    }
+                    if (this.tags[index].org.attributes[j].nodeName === '[ngclass]') {
+                        const splitNode = this.tags[index].org.attributes[j].value.split('?');
+                        const splitClasses = splitNode[1].split(':');
+                        let targetClasses = '';
+                        const condition = this.replaceNames(splitNode[0]);
+                        if (condition) {
+                            targetClasses = splitClasses[0].replace(/'/g, '');
+                            targetClasses = targetClasses.slice(1, targetClasses.length - 1)
+                        } else {
+                            targetClasses = splitClasses[1].replace(/'/g, '');
+                            targetClasses = targetClasses.slice(1, targetClasses.length - 1)
+                        }
+                        this.tags[index].current.className = targetClasses;
+                    }
                     isTarget = true;
                     var hh = this.tags[index].org.attributes[j].value;
                     // const valSplit = hh.split(';');
@@ -390,10 +419,8 @@ export class MainCore {
                 // *ngIf
                 if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngi\w+/)) {
                     isTarget = true;
-                    console.log(this.tags, index);
                     const ff = this.tags[index].org.attributes[j].value;
 
-                    console.log(this.replaceNames(ff), ff);
                     const value2 = this.replaceNames(ff);
                     // var ff = this.tags[index].org.attributes[j].value;
                     // for (let k = 0; k < classVariables.length; k++) {
@@ -403,7 +430,6 @@ export class MainCore {
                     if (!value2) {
                         const comment = document.createComment(this.tags[index].current.uniqId);
                         this.comments.push(comment);
-                        console.log([this.tags[index].current.uniqId]);
                         this.tags[index].current.parentNode.insertBefore(comment, this.tags[index].current.nextSibling);
                         this.mainElement = this.tags[index].current.parentNode;
 
@@ -424,95 +450,97 @@ export class MainCore {
 
                 }
 
-                // // *ngFor
-                // if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngfo\w+/)) {
-                //     isTarget = true;
-                //     // console.log(this.tags[index].current.COMMENT_NODE);
-                //     // console.log(this.tags[index].org.attributes[j].value);
-                //     var ff = this.tags[index].org.attributes[j].value.split(' of ');
-                //     var nameOfIn = ff[0].split('let ')[1];
-                //     // console.log(ff);
-                //     // console.log(nameOfIn);
-                //     // console.log(this.instance[ff[1]]);
-                //     // console.log(this.tags[index].current);
-                //     var arr = this.instance[ff[1]];
-                //     // var df = document.createElement('span');
-                //     // df.innerHTML = '333';
-                //     // realTag.after(df);
-                //     // console.log(this.tags[index].current.previousSibling);
-                //     const comment = document.createComment(this.tags[index].org.attributes[j].value);
-                //     // console.log([realTag]);
-                //     // console.log([this.tempTags[index - 1]]);
-                //     // (this.tempTags[index - 2] as any).before(comment);
-                //     // console.log([this.tags[index].current]);
-                //     this.tags[index].current.removeAttribute(this.tags[index].org.attributes[j].nodeName);
-                //     this.tags[index].current.setAttribute('ngFor', 'true');
-                //     // console.log(this.mainElement);
-                //     const tagCode = Math.random() * 10000;
-                //     realTag.ffor = ff[1];
-                //     this.tags[index].current.ffor = ff[1];
-                //     realTag.havij = tagCode;
-                //     this.tags[index].current.havij = tagCode;
-                //     realTag.forIndex = 0;
-                //     this.tags[index].current.forIndex = 0;
-                //     this.forTags.push({
-                //         mainTagIndex: index,
-                //         tagCode: tagCode,
-                //         newTags: []
-                //     });
-                //
-                //     var testD = [];
-                //     // this.tags[index].current.innerHTML = arr[0];
-                //
-                //     for (let i = 1; i < arr.length; i++) {
-                //         // console.log(this.tags[index].current);
-                //         if (!this.tags[index].current.parentNode) {
-                //             // var this.instancePrototype = Object.getPrototypeOf(this.instance);
-                //             // var parent = document.getElementsByTagName(this.instancePrototype.obj.selector);
-                //             // if (parent.length > 0) {
-                //             // var cloneNode = this.tags[index].current.cloneNode(true);
-                //             // var newD = this.tags[index].current.cloneNode(true);
-                //             var newD: any = document.createElement('p');
-                //             newD.setAttribute('aaa', '3333');
-                //             newD.ffor = ff[1];
-                //             newD.ffor = ff[1];
-                //             newD.innerHTML = this.tags[index].current.innerHTML;
-                //             newD.forIndex = i;
-                //             // newD.replaceWith(cloneNode);
-                //             // newD.innerHTML = arr[i];
-                //             testD.push(newD);
-                //             this.forTags[this.forTags.length - 1].newTags.push(newD);
-                //             if (i === 1) {
-                //                 newD = this.mainElement.insertBefore(newD, realTag.nextSibling);
-                //             } else {
-                //                 newD = this.mainElement.insertBefore(newD, this.forTags[this.forTags.length - 1].newTags[i - 2].nextSibling);
-                //             }
-                //             // newD.innerHTML = '333333';
-                //             // realTag.after(df);
-                //             this.tags.push({
-                //                 tag: newD.cloneNode(true),
-                //                 xpath: this.getXPathForElement(newD, this.mainElement),
-                //                 tagAfterEval: newD
-                //             });
-                //             // console.log(this.mainElement);
-                //             // }
-                //         }
-                //     }
-                //     var ab = this.instance[ff[1]].slice();
-                //     this.repeatChecking2(ab, this.instance, ff[1], this.tags[index].current, this.forTags.length - 1, testD);
-                // this.tags[index].current.remove();
-                // console.log(this.forTags);
-                // this.tags[index].current.parentNode.insertBefore(newD, this.tags[index].current.nextSibling);
-                // for (let k = 0; k < funcVariables.length; k++) {
-                //     ff = ff.replace(funcVariables[k], "this.instance." + funcVariables[k]);
-                // }
-                // var value = eval(ff);
-                // var value = Function('"use strict";return (' + ff + ')')();
-                // if (!value) {
-                //     this.tags[index].current = value;
-                // this.tags[index].current.remove();
-                // }
-                // }
+                // *ngFor
+                if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngfo\w+/)) {
+                    console.log(this.tags[index].org.attributes[j].nodeName);
+                    isTarget = true;
+                    //     // console.log(this.tags[index].current.COMMENT_NODE);
+                    //     // console.log(this.tags[index].org.attributes[j].value);
+                        var ff = this.tags[index].org.attributes[j].value.split(' of ');
+                        var nameOfIn = ff[0].split('let ')[1];
+                        console.log(ff);
+                        console.log(nameOfIn);
+
+                    //     // console.log(this.tags[index].current);
+                        var arr = this.replaceNames(ff[1]);
+                    console.log(arr);
+                    //     // var df = document.createElement('span');
+                    //     // df.innerHTML = '333';
+                    //     // realTag.after(df);
+                    //     // console.log(this.tags[index].current.previousSibling);
+                    //     const comment = document.createComment(this.tags[index].org.attributes[j].value);
+                    //     // console.log([realTag]);
+                    //     // console.log([this.tempTags[index - 1]]);
+                    //     // (this.tempTags[index - 2] as any).before(comment);
+                    //     // console.log([this.tags[index].current]);
+                    //     this.tags[index].current.removeAttribute(this.tags[index].org.attributes[j].nodeName);
+                    //     this.tags[index].current.setAttribute('ngFor', 'true');
+                    //     // console.log(this.mainElement);
+                    //     const tagCode = Math.random() * 10000;
+                    //     realTag.ffor = ff[1];
+                    //     this.tags[index].current.ffor = ff[1];
+                    //     realTag.havij = tagCode;
+                    //     this.tags[index].current.havij = tagCode;
+                    //     realTag.forIndex = 0;
+                    //     this.tags[index].current.forIndex = 0;
+                    //     this.forTags.push({
+                    //         mainTagIndex: index,
+                    //         tagCode: tagCode,
+                    //         newTags: []
+                    //     });
+                    //
+                    //     var testD = [];
+                    //     // this.tags[index].current.innerHTML = arr[0];
+                    //
+                        for (let i = 1; i < arr.length; i++) {
+                            console.log(this.tags[index].current);
+                    //         if (!this.tags[index].current.parentNode) {
+                                // var this.instancePrototype = Object.getPrototypeOf(this.instance);
+                                // var parent = document.getElementsByTagName(this.instancePrototype.obj.selector);
+                    //             // if (parent.length > 0) {
+                    //             // var cloneNode = this.tags[index].current.cloneNode(true);
+                    //             // var newD = this.tags[index].current.cloneNode(true);
+                    //             var newD: any = document.createElement('p');
+                    //             newD.setAttribute('aaa', '3333');
+                    //             newD.ffor = ff[1];
+                    //             newD.ffor = ff[1];
+                    //             newD.innerHTML = this.tags[index].current.innerHTML;
+                    //             newD.forIndex = i;
+                    //             // newD.replaceWith(cloneNode);
+                    //             // newD.innerHTML = arr[i];
+                    //             testD.push(newD);
+                    //             this.forTags[this.forTags.length - 1].newTags.push(newD);
+                    //             if (i === 1) {
+                    //                 newD = this.mainElement.insertBefore(newD, realTag.nextSibling);
+                    //             } else {
+                    //                 newD = this.mainElement.insertBefore(newD, this.forTags[this.forTags.length - 1].newTags[i - 2].nextSibling);
+                    //             }
+                    //             // newD.innerHTML = '333333';
+                    //             // realTag.after(df);
+                    //             this.tags.push({
+                    //                 tag: newD.cloneNode(true),
+                    //                 xpath: this.getXPathForElement(newD, this.mainElement),
+                    //                 tagAfterEval: newD
+                    //             });
+                    //             // console.log(this.mainElement);
+                    //             // }
+                    //         }
+                        }
+                    //     var ab = this.instance[ff[1]].slice();
+                    //     this.repeatChecking2(ab, this.instance, ff[1], this.tags[index].current, this.forTags.length - 1, testD);
+                    // this.tags[index].current.remove();
+                    // console.log(this.forTags);
+                    // this.tags[index].current.parentNode.insertBefore(newD, this.tags[index].current.nextSibling);
+                    // for (let k = 0; k < funcVariables.length; k++) {
+                    //     ff = ff.replace(funcVariables[k], "this.instance." + funcVariables[k]);
+                    // }
+                    // var value = eval(ff);
+                    // var value = Function('"use strict";return (' + ff + ')')();
+                    // if (!value) {
+                    //     this.tags[index].current = value;
+                    // this.tags[index].current.remove();
+                    // }
+                }
 
             }
         }
@@ -575,8 +603,11 @@ export class MainCore {
             withoutSpace = withoutSpace.replace(/aobj\.functions\.aobj\.functions/g, 'aobj\.functions');
             withoutSpace = withoutSpace.replace(/aaobj\.functions\./g, 'a');
         }
-        console.log(withoutSpace);
         return Function("return " + withoutSpace)();
+    }
+
+    setStylesOnElement(styles: any, element: any) {
+        Object.assign(element.style, styles);
     }
 
     isJson(str: any) {

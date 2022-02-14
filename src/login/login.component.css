@@ -1,8 +1,12 @@
 p {
     color: #dadada;
-    text-align: right;
+    text-align: left;
 }
 
 h1 {
     color: #000;
+}
+
+.selected {
+    background: blueviolet;
 }

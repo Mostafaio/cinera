@@ -28,7 +28,7 @@ import {Component} from "../../@cinera/component";
 @Component({
     selector: 'app-register',
     templateUrl: './register.component.html',
-    styleUrl: './register.component.scss'
+    styleUrl: './register.component.css'
 }, 'register')
 export class RegisterComponent {
     havij = 'Man register havij hastm!';

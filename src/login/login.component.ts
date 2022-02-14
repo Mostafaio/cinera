@@ -28,7 +28,7 @@ import {Component} from "../../@cinera/component";
 @Component({
     selector: 'app-login',
     templateUrl: './login.component.html',
-    styleUrl: './login.component.scss'
+    styleUrl: './login.component.css'
 }, 'login')
 export class LoginComponent {
     havij = 'Man havij hastm!';
