@@ -92,6 +92,7 @@ export class LoginComponent {
     test4(havij: any) {
         return havij;
     }
+
     test5() {
         return 'test5 hastam';
     }
@@ -99,7 +100,10 @@ export class LoginComponent {
     onClickBox2() {
         // this.arr[0] = Math.round(+(Math.random() * 100).toString());
         // for (let i = 0; i < 30; i++) {
-        this.arr.push(Math.random() * 100);
+        // this.arr.push(Math.random() * 100);
+        this.arr.pop();
+        // this.havij = Math.random().toString();
+        // console.log(this.havij);
         // }
         // console.log(this.arr);
         // setTimeout(() => {

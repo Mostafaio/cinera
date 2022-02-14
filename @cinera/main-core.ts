@@ -1,5 +1,5 @@
 export class MainCore {
-    tags: { org: any, current: any, changes: any[], invVariables: [], invFunctions: [] }[] = [];
+    tags: { org: any, current: any, changes: any[], invVariables: [], invFunctions: [], arr?: any[] }[] = [];
     instance: any;
     mainElement: any;
     comments: any = [];
@@ -16,7 +16,6 @@ export class MainCore {
         var path = 'src/' + instancePrototype.mainPath + '/';
         var tempHtmlLoc = path + instancePrototype.obj.templateUrl.replace('./', '');
         var tempCSSLoc = path + instancePrototype.obj.styleUrl.replace('./', '');
-        console.log(tempCSSLoc);
         var classFunctions = Object.getOwnPropertyNames(instancePrototype);
         var classVariables = Object.keys(instance);
         var classFuncVars = classVariables.concat(classFunctions);
@@ -39,7 +38,6 @@ export class MainCore {
             };
         }
         // @ts-ignore
-        console.log(window);
         for (let m = 0; m < classVariables.length; m++) {
             var ingg = instance[classVariables[m]];
             if (typeof ingg === 'object') {
@@ -79,7 +77,6 @@ export class MainCore {
             style.type = 'text/css';
             style.innerHTML = cssSource;
 
-            console.log(cssSource);
         });
         // console.log(classVariables);
         return this.getHTMLSource(tempHtmlLoc).then((htmlSource: string) => {
@@ -103,56 +100,59 @@ export class MainCore {
                     invFunctions: []
                 });
                 for (let j = 0; j < children[i].attributes.length; j++) {
-                    if (!this.tags[i].org.attributes[j].nodeName.match(/\(.*?\)/)) {
-                        const split = children[i].attributes[j].value.split(';');
-                        for (let k = 0; k < split.length; k++) {
-                            const perSplit = split[k].split('(');
-                            if (perSplit.length > 1) {
-                                for (let m = 0; m < classFunctions.length; m++) {
-                                    perSplit[0] = perSplit[0].replace('!', '');
-                                    perSplit[0] = perSplit[0].replace('+', '');
-                                    if (perSplit[0] === classFunctions[m]) {
-                                        // @ts-ignore
-                                        this.tags[i].invFunctions.push(classFunctions[m]);
-                                        var value = '';
-                                        var dd = split[k].split('(');
-                                        if (dd.length > 1) {
-                                            dd[1] = dd[1].substr(0, dd[1].length - 1);
-                                            value = instance[dd[0]].apply(instance, dd[1].split(','));
-                                        } else {
-                                            value = instance[split[k]];
-                                        }
-                                        var ingg = instance[dd[0]].apply(instance, dd[1].split(','));
-                                        if (typeof ingg === 'object') {
-                                            ingg = ingg.slice();
-                                        }
-                                        var changes = this.changeFunctionDetection(ingg, dd[0], dd[1]);
-                                        this.tags[i].changes.push(changes);
-                                    }
-                                }
-                            } else {
-                                const varSplit = split[k].split(' =');
-                                for (let m = 0; m < classVariables.length; m++) {
-                                    varSplit[0] = varSplit[0].replace('!', '');
-                                    varSplit[0] = varSplit[0].replace('+', '');
-                                    if (varSplit[0] === classVariables[m]) {
-                                        // @ts-ignore
-                                        this.tags[i].invVariables.push(classVariables[m]);
-                                        var ingg = instance[classVariables[m]];
-                                        if (typeof ingg === 'object') {
-                                            if (ingg.length) {
-                                                ingg = ingg.slice();
+                    if (this.tags[i].org.attributes[j]) {
+                        if (!this.tags[i].org.attributes[j].nodeName.match(/\(.*?\)/)) {
+                            const split = children[i].attributes[j].value.split(';');
+                            for (let k = 0; k < split.length; k++) {
+                                const perSplit = split[k].split('(');
+                                if (perSplit.length > 1) {
+                                    for (let m = 0; m < classFunctions.length; m++) {
+                                        perSplit[0] = perSplit[0].replace('!', '');
+                                        perSplit[0] = perSplit[0].replace('+', '');
+                                        if (perSplit[0] === classFunctions[m]) {
+                                            // @ts-ignore
+                                            this.tags[i].invFunctions.push(classFunctions[m]);
+                                            var value = '';
+                                            var dd = split[k].split('(');
+                                            if (dd.length > 1) {
+                                                dd[1] = dd[1].substr(0, dd[1].length - 1);
+                                                value = instance[dd[0]].apply(instance, dd[1].split(','));
                                             } else {
-                                                ingg = Object.assign({}, ingg);
+                                                value = instance[split[k]];
                                             }
+                                            var ingg = instance[dd[0]].apply(instance, dd[1].split(','));
+                                            if (typeof ingg === 'object') {
+                                                ingg = ingg.slice();
+                                            }
+                                            var changes = this.changeFunctionDetection(ingg, dd[0], dd[1]);
+                                            this.tags[i].changes.push(changes);
                                         }
-                                        // console.log(this.tags[i]);
-                                        // var changes = this.changeDetection(ingg, classVariables[m]);
-                                        this.tags[i].changes.push(changes);
+                                    }
+                                } else {
+                                    const varSplit = split[k].split(' =');
+                                    for (let m = 0; m < classVariables.length; m++) {
+                                        varSplit[0] = varSplit[0].replace('!', '');
+                                        varSplit[0] = varSplit[0].replace('+', '');
+                                        if (varSplit[0] === classVariables[m]) {
+                                            // @ts-ignore
+                                            this.tags[i].invVariables.push(classVariables[m]);
+                                            var ingg = instance[classVariables[m]];
+                                            if (typeof ingg === 'object') {
+                                                if (ingg.length) {
+                                                    ingg = ingg.slice();
+                                                } else {
+                                                    ingg = Object.assign({}, ingg);
+                                                }
+                                            }
+                                            // console.log(this.tags[i]);
+                                            // var changes = this.changeDetection(ingg, classVariables[m]);
+                                            this.tags[i].changes.push(changes);
+                                        }
                                     }
                                 }
                             }
                         }
+
                     }
                 }
                 this.updateTag(i);
@@ -214,7 +214,6 @@ export class MainCore {
                 for (let i = 0; i < this.tags.length; i++) {
                     var founds = this.tags[i].invVariables.filter((v: any) => v === varName);
                     if (founds.length > 0) {
-                        console.log(this.tags[i]);
                         this.updateTag(i);
                     }
                 }
@@ -238,33 +237,12 @@ export class MainCore {
         const classVariables = Object.keys(this.instance);
         const instancePrototype = Object.getPrototypeOf(this.instance);
         const classFunctions = Object.getOwnPropertyNames(instancePrototype);
-        let sentence = '';
         // @ts-ignore
         // window.aobj.functions['getImageSource6'] = (x) => {
         //     // @ts-ignore
         //     return this.instance.getImageSource2(x);
         // };
-        let mainSentence = '';
-        // console.log(this.tags[index].current.textContent);
-        for (let i = 0; i < this.tags[index].current.textContent.length; i++) {
-            if ((sentence === '' || sentence === '{') && this.tags[index].current.textContent[i] === '{') {
-                sentence = sentence + this.tags[index].current.textContent[i];
-            } else if (sentence.length > 1) {
-                // console.log(sentence);
-                sentence = sentence + this.tags[index].current.textContent[i];
-                if (sentence[sentence.length - 1] === '}' && sentence[sentence.length - 2] === '}') {
-                    // @ts-ignore
-                    // console.log(sentence.match(/(?<=\{\{).+?(?=\}})/g)[0], this.replaceNames('getImageSource()'));
-                    // @ts-ignore
-                    mainSentence = mainSentence + this.replaceNames(sentence.match(/(?<=\{\{).+?(?=\}})/g)[0]);
-                    sentence = '';
-                    // console.log(mainSentence);
-                }
-            } else {
-                mainSentence = mainSentence + this.tags[index].current.textContent[i];
-            }
-        }
-        this.tags[index].current.textContent = mainSentence;
+
         // console.log(mainSentence);
         // if (this.tags[index].current.textContent.match(/\B\\w+/)) {
         //     this.tags[index].current.textContent = this.replaceNames(this.tags[index].current.textContent);
@@ -401,7 +379,6 @@ export class MainCore {
                                         }
                                         for (let m = 0; m < classVariables.length; m++) {
                                             if (ggf[b] === classVariables[m]) {
-                                                console.log(this.instance[ggf[b]]);
                                                 ggf[b] = this.instance[ggf[b]];
                                             }
                                         }
@@ -452,25 +429,22 @@ export class MainCore {
 
                 // *ngFor
                 if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngfo\w+/)) {
-                    console.log(this.tags[index].org.attributes[j].nodeName);
                     isTarget = true;
-                    //     // console.log(this.tags[index].current.COMMENT_NODE);
-                    //     // console.log(this.tags[index].org.attributes[j].value);
-                        var ff = this.tags[index].org.attributes[j].value.split(' of ');
-                        var nameOfIn = ff[0].split('let ')[1];
-                        console.log(ff);
-                        console.log(nameOfIn);
-
+                    //      console.log(this.tags[index].current.COMMENT_NODE);
+                    //     console.log(this.tags[index].org.attributes[j].value);
+                    var ff = this.tags[index].org.attributes[j].value.split(' of ');
+                    var nameOfIn = ff[0].split('let ')[1];
+                    // console.log(nameOfIn);
+                    // console.log(this.tags[index]);
                     //     // console.log(this.tags[index].current);
-                        var arr = this.replaceNames(ff[1]);
-                    console.log(arr);
+                    var arr = this.replaceNames(ff[1]);
                     //     // var df = document.createElement('span');
                     //     // df.innerHTML = '333';
-                    //     // realTag.after(df);
+                    //     realTag.after(df);
                     //     // console.log(this.tags[index].current.previousSibling);
                     //     const comment = document.createComment(this.tags[index].org.attributes[j].value);
                     //     // console.log([realTag]);
-                    //     // console.log([this.tempTags[index - 1]]);
+                    //     console.log([this.tempTags[index - 1]]);
                     //     // (this.tempTags[index - 2] as any).before(comment);
                     //     // console.log([this.tags[index].current]);
                     //     this.tags[index].current.removeAttribute(this.tags[index].org.attributes[j].nodeName);
@@ -492,40 +466,89 @@ export class MainCore {
                     //     var testD = [];
                     //     // this.tags[index].current.innerHTML = arr[0];
                     //
+
+                    this.tags[index].current.removeAttribute(this.tags[index].org.attributes[j].nodeName);
+
+                    if (!this.tags[index].arr) {
                         for (let i = 1; i < arr.length; i++) {
-                            console.log(this.tags[index].current);
-                    //         if (!this.tags[index].current.parentNode) {
-                                // var this.instancePrototype = Object.getPrototypeOf(this.instance);
-                                // var parent = document.getElementsByTagName(this.instancePrototype.obj.selector);
-                    //             // if (parent.length > 0) {
-                    //             // var cloneNode = this.tags[index].current.cloneNode(true);
-                    //             // var newD = this.tags[index].current.cloneNode(true);
-                    //             var newD: any = document.createElement('p');
-                    //             newD.setAttribute('aaa', '3333');
-                    //             newD.ffor = ff[1];
-                    //             newD.ffor = ff[1];
-                    //             newD.innerHTML = this.tags[index].current.innerHTML;
-                    //             newD.forIndex = i;
-                    //             // newD.replaceWith(cloneNode);
-                    //             // newD.innerHTML = arr[i];
-                    //             testD.push(newD);
-                    //             this.forTags[this.forTags.length - 1].newTags.push(newD);
-                    //             if (i === 1) {
-                    //                 newD = this.mainElement.insertBefore(newD, realTag.nextSibling);
-                    //             } else {
-                    //                 newD = this.mainElement.insertBefore(newD, this.forTags[this.forTags.length - 1].newTags[i - 2].nextSibling);
-                    //             }
-                    //             // newD.innerHTML = '333333';
-                    //             // realTag.after(df);
-                    //             this.tags.push({
-                    //                 tag: newD.cloneNode(true),
-                    //                 xpath: this.getXPathForElement(newD, this.mainElement),
-                    //                 tagAfterEval: newD
-                    //             });
-                    //             // console.log(this.mainElement);
-                    //             // }
-                    //         }
+                            //         if (!this.tags[index].current.parentNode) {
+                            // var this.instancePrototype = Object.getPrototypeOf(this.instance);
+                            // var parent = document.getElementsByTagName(this.instancePrototype.obj.selector);
+                            //             // if (parent.length > 0) {
+                            //             // var cloneNode = this.tags[index].current.cloneNode(true);
+                            var newD = this.tags[index].current.cloneNode(true);
+                            var newDOrg = this.tags[index].org.cloneNode(true);
+                            newDOrg.removeAttribute(newDOrg.attributes[j].nodeName);
+                            newD = this.mainElement.insertBefore(newD, this.tags[index].current.nextSibling);
+                            newD.forIndex = i;
+                            newD.forName = ff[1];
+                            newD.forOfName = ff[0];
+                            this.tags.splice(index + i, 0, {
+                                current: newD,
+                                changes: [],
+                                invFunctions: this.tags[index].invFunctions,
+                                invVariables: this.tags[index].invVariables,
+                                org: newDOrg
+                            });
+                            // this.updateTag(index + i);
+                            console.log(this.tags, index);
+                            //             var newD: any = document.createElement('p');
+                            //             newD.setAttribute('aaa', '3333');
+                            //             newD.ffor = ff[1];
+                            //             newD.ffor = ff[1];
+                            //             newD.innerHTML = this.tags[index].current.innerHTML;
+                            //             newD.forIndex = i;
+                            //             // newD.replaceWith(cloneNode);
+                            //             // newD.innerHTML = arr[i];
+                            //             testD.push(newD);
+                            //             this.forTags[this.forTags.length - 1].newTags.push(newD);
+                            //             if (i === 1) {
+                            //                 newD = this.mainElement.insertBefore(newD, realTag.nextSibling);
+                            //             } else {
+                            //                 newD = this.mainElement.insertBefore(newD, this.forTags[this.forTags.length - 1].newTags[i - 2].nextSibling);
+                            //             }
+                            //             // newD.innerHTML = '333333';
+                            //             // realTag.after(df);
+                            //             this.tags.push({
+                            //                 tag: newD.cloneNode(true),
+                            //                 xpath: this.getXPathForElement(newD, this.mainElement),
+                            //                 tagAfterEval: newD
+                            //             });
+                            //             // console.log(this.mainElement);
+                            //             // }
+                            //         }
                         }
+
+                    } else {
+                        // @ts-ignore
+                        if (this.tags[index].arr.length > arr.length) {
+                            console.log(77);
+                            // @ts-ignore
+                            for (let c = 0; c < this.tags[index].arr.length; c++) {
+                                // @ts-ignore
+                                if (this.tags[index].arr[c] !== arr[c]) {
+                                    // @ts-ignore
+                                    this.tags[index + c].current.remove();
+                                }
+                            }
+                            // @ts-ignore
+                        } else if (this.tags[index].arr.length < arr.length) {
+                            // this.tags.splice(index + 1, 0, {
+                            //     current: newD,
+                            //     changes: [],
+                            //     invFunctions: this.tags[index].invFunctions,
+                            //     invVariables: this.tags[index].invVariables,
+                            //     org: newDOrg
+                            // });
+                        } else {
+
+                        }
+                    }
+
+                    this.tags[index].current.forIndex = 0;
+                    this.tags[index].current.forName = ff[1];
+                    this.tags[index].current.forOfName = ff[0];
+                    this.tags[index].arr = arr.slice();
                     //     var ab = this.instance[ff[1]].slice();
                     //     this.repeatChecking2(ab, this.instance, ff[1], this.tags[index].current, this.forTags.length - 1, testD);
                     // this.tags[index].current.remove();
@@ -544,6 +567,28 @@ export class MainCore {
 
             }
         }
+        let mainSentence = '';
+        let sentence = '';
+        // console.log(this.tags[index].current.textContent);
+        for (let i = 0; i < this.tags[index].current.textContent.length; i++) {
+            if ((sentence === '' || sentence === '{') && this.tags[index].current.textContent[i] === '{') {
+                sentence = sentence + this.tags[index].current.textContent[i];
+            } else if (sentence.length > 1) {
+                // console.log(sentence);
+                sentence = sentence + this.tags[index].current.textContent[i];
+                if (sentence[sentence.length - 1] === '}' && sentence[sentence.length - 2] === '}') {
+                    // @ts-ignore
+                    // console.log(sentence.match(/(?<=\{\{).+?(?=\}})/g)[0], this.replaceNames('getImageSource()'));
+                    // @ts-ignore
+                    mainSentence = mainSentence + this.replaceNames(sentence.match(/(?<=\{\{).+?(?=\}})/g)[0]);
+                    sentence = '';
+                    // console.log(mainSentence);
+                }
+            } else {
+                mainSentence = mainSentence + this.tags[index].current.textContent[i];
+            }
+        }
+        this.tags[index].current.textContent = mainSentence;
         // let htmlFuncs: any = this.tags[index].current.textContent.match(/(?<=\{{).+?(?=\}})/g);
         // // console.log(htmlFuncs);
         // // for (let i = 0; i < funcs.length; i++) {

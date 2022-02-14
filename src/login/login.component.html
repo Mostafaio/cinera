@@ -4,7 +4,7 @@
 <button (click)="onClickBox2()">Change 3</button>
 <a [href]="havij + 5+havij + inpVal + '10' + test5() + test4(havij)">asdsad</a>
 <p>gggg</p>
-<p *ngFor="let ar of arr" style="color: rgba(165,15,165,0.67)">{{ havij }}</p>
+<a *ngFor="let ar of arr" style="color: rgba(165,15,165,0.67)" [href]="havij">{{ havij }}</a>
 <p *ngIf="isShow">gogoooli {{ isShow }}</p>K
 <p *ngIf="!isShow">hjjjjjjjj {{ isShow }}</p>
 <p [ngStyle]="getBool(true) ? {background: '#000', color: 'red'} : {background: '#dadada'}">hoora</p>
