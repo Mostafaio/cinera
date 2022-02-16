@@ -1,9 +1,11 @@
 export class MainCore {
-    tags: { org: any, current: any, changes: any[], invVariables: [], invFunctions: [], arr?: any[] }[] = [];
+    tags: { org: any, current: any, changes: any[], invVariables: [], invFunctions: [], arr?: any[], parent?: any }[] = [];
     instance: any;
     mainElement: any;
     comments: any = [];
     testoli: any;
+    classFunctions: any;
+    classVariables: any;
 
     constructor() {
         // super(props);
@@ -18,6 +20,8 @@ export class MainCore {
         var tempCSSLoc = path + instancePrototype.obj.styleUrl.replace('./', '');
         var classFunctions = Object.getOwnPropertyNames(instancePrototype);
         var classVariables = Object.keys(instance);
+        this.classFunctions = classFunctions;
+        this.classVariables = classVariables;
         var classFuncVars = classVariables.concat(classFunctions);
         // @ts-ignore
         window['aobj'] = {
@@ -155,6 +159,8 @@ export class MainCore {
 
                     }
                 }
+            }
+            for (let i = 0; i < children.length; i++) {
                 this.updateTag(i);
             }
             // console.log(this.tags);
@@ -193,7 +199,6 @@ export class MainCore {
             let obj2 = this.instance[varName];
             // obj2 = this.instance[variableName];
             if (JSON.stringify(obj2) !== JSON.stringify(oldValue)) {
-                // console.log(oldValue, obj2);
                 var tags = [];
                 // for (let i = 0; i < this.mainElement.childNodes.length; i++) {
                 //     if (this.mainElement.childNodes[i].nodeType !== 3) {
@@ -212,9 +217,17 @@ export class MainCore {
                 // @ts-ignore
                 window.aobj.variables[varName] = oldValue;
                 for (let i = 0; i < this.tags.length; i++) {
-                    var founds = this.tags[i].invVariables.filter((v: any) => v === varName);
-                    if (founds.length > 0) {
-                        this.updateTag(i);
+                    if (this.tags[i].current.forIndex !== undefined) {
+                        var founds = this.tags[i - this.tags[i].current.forIndex].invVariables.filter((v: any) => v === varName);
+                        if (founds.length > 0) {
+                            console.log(66);
+                            this.updateTag(i - this.tags[i].current.forIndex);
+                        }
+                    } else {
+                        var founds = this.tags[i].invVariables.filter((v: any) => v === varName);
+                        if (founds.length > 0) {
+                            this.updateTag(i);
+                        }
                     }
                 }
             }
@@ -271,7 +284,6 @@ export class MainCore {
         // console.log(instance[funcVariables[i]]);
         //     isTarget = true;
         // }
-
 
         if (this.tags[index].org.attributes.length > 0) {
             for (let j = 0; j < this.tags[index].org.attributes.length; j++) {
@@ -393,7 +405,7 @@ export class MainCore {
                     });
                 }
 
-                // *ngIf
+                // *ngIf/
                 if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngi\w+/)) {
                     isTarget = true;
                     const ff = this.tags[index].org.attributes[j].value;
@@ -428,167 +440,188 @@ export class MainCore {
                 }
 
                 // *ngFor
+                // if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngfo\w+/) && this.tags[index].current.forIndex === undefined) {
                 if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngfo\w+/)) {
+                    console.log(333);
+                    let tagArr: any = [];
+                    if (this.tags[index].arr) {
+                        tagArr = this.tags[index].arr;
+                    }
                     isTarget = true;
-                    //      console.log(this.tags[index].current.COMMENT_NODE);
-                    //     console.log(this.tags[index].org.attributes[j].value);
                     var ff = this.tags[index].org.attributes[j].value.split(' of ');
                     var nameOfIn = ff[0].split('let ')[1];
-                    // console.log(nameOfIn);
-                    // console.log(this.tags[index]);
-                    //     // console.log(this.tags[index].current);
                     var arr = this.replaceNames(ff[1]);
-                    //     // var df = document.createElement('span');
-                    //     // df.innerHTML = '333';
-                    //     realTag.after(df);
-                    //     // console.log(this.tags[index].current.previousSibling);
-                    //     const comment = document.createComment(this.tags[index].org.attributes[j].value);
-                    //     // console.log([realTag]);
-                    //     console.log([this.tempTags[index - 1]]);
-                    //     // (this.tempTags[index - 2] as any).before(comment);
-                    //     // console.log([this.tags[index].current]);
-                    //     this.tags[index].current.removeAttribute(this.tags[index].org.attributes[j].nodeName);
-                    //     this.tags[index].current.setAttribute('ngFor', 'true');
-                    //     // console.log(this.mainElement);
-                    //     const tagCode = Math.random() * 10000;
-                    //     realTag.ffor = ff[1];
-                    //     this.tags[index].current.ffor = ff[1];
-                    //     realTag.havij = tagCode;
-                    //     this.tags[index].current.havij = tagCode;
-                    //     realTag.forIndex = 0;
-                    //     this.tags[index].current.forIndex = 0;
-                    //     this.forTags.push({
-                    //         mainTagIndex: index,
-                    //         tagCode: tagCode,
-                    //         newTags: []
-                    //     });
-                    //
-                    //     var testD = [];
-                    //     // this.tags[index].current.innerHTML = arr[0];
-                    //
-
+                    // this.tags[index].current.forIndex = 0;
                     this.tags[index].current.removeAttribute(this.tags[index].org.attributes[j].nodeName);
+                    // @ts-ignore
+                    this.tags[index].invVariables.push(ff[1]);
 
-                    if (!this.tags[index].arr) {
-                        for (let i = 1; i < arr.length; i++) {
-                            //         if (!this.tags[index].current.parentNode) {
-                            // var this.instancePrototype = Object.getPrototypeOf(this.instance);
-                            // var parent = document.getElementsByTagName(this.instancePrototype.obj.selector);
-                            //             // if (parent.length > 0) {
-                            //             // var cloneNode = this.tags[index].current.cloneNode(true);
-                            var newD = this.tags[index].current.cloneNode(true);
-                            var newDOrg = this.tags[index].org.cloneNode(true);
-                            newDOrg.removeAttribute(newDOrg.attributes[j].nodeName);
-                            newD = this.mainElement.insertBefore(newD, this.tags[index].current.nextSibling);
-                            newD.forIndex = i;
-                            newD.forName = ff[1];
-                            newD.forOfName = ff[0];
-                            this.tags.splice(index + i, 0, {
-                                current: newD,
-                                changes: [],
-                                invFunctions: this.tags[index].invFunctions,
-                                invVariables: this.tags[index].invVariables,
-                                org: newDOrg
-                            });
-                            // this.updateTag(index + i);
-                            console.log(this.tags, index);
-                            //             var newD: any = document.createElement('p');
-                            //             newD.setAttribute('aaa', '3333');
-                            //             newD.ffor = ff[1];
-                            //             newD.ffor = ff[1];
-                            //             newD.innerHTML = this.tags[index].current.innerHTML;
-                            //             newD.forIndex = i;
-                            //             // newD.replaceWith(cloneNode);
-                            //             // newD.innerHTML = arr[i];
-                            //             testD.push(newD);
-                            //             this.forTags[this.forTags.length - 1].newTags.push(newD);
-                            //             if (i === 1) {
-                            //                 newD = this.mainElement.insertBefore(newD, realTag.nextSibling);
-                            //             } else {
-                            //                 newD = this.mainElement.insertBefore(newD, this.forTags[this.forTags.length - 1].newTags[i - 2].nextSibling);
-                            //             }
-                            //             // newD.innerHTML = '333333';
-                            //             // realTag.after(df);
-                            //             this.tags.push({
-                            //                 tag: newD.cloneNode(true),
-                            //                 xpath: this.getXPathForElement(newD, this.mainElement),
-                            //                 tagAfterEval: newD
-                            //             });
-                            //             // console.log(this.mainElement);
-                            //             // }
-                            //         }
+                    console.log(arr, tagArr);
+                    if (arr.length === tagArr.length) {
+                        this.tags[index].arr = arr.slice();
+                        for (let o = 0; o < arr.length; o++) {
+                            // if (arr[o] !== tagArr[o]) {
+                            //     this.updateTag(index + o);
+                            // }
                         }
-
-                    } else {
-                        // @ts-ignore
-                        if (this.tags[index].arr.length > arr.length) {
-                            console.log(77);
-                            // @ts-ignore
-                            for (let c = 0; c < this.tags[index].arr.length; c++) {
-                                // @ts-ignore
-                                if (this.tags[index].arr[c] !== arr[c]) {
-                                    // @ts-ignore
-                                    this.tags[index + c].current.remove();
-                                }
+                    }
+                    if (arr.length > tagArr.length) {
+                        this.tags[index].arr = arr.slice();
+                        for (let o = 1; o < arr.length; o++) {
+                            if (arr[o] !== tagArr[o]) {
+                                var newD = this.tags[index].current.cloneNode(true);
+                                var newDOrg = this.tags[index].org.cloneNode(true);
+                                newDOrg.removeAttribute(this.tags[index].org.attributes[j].nodeName);
+                                newD = this.mainElement.insertBefore(newD, this.tags[index].current.nextSibling);
+                                newD.forIndex = o;
+                                newD.forName = ff[1];
+                                newD.forOfName = ff[0];
+                                this.tags.splice(index + o, 0, {
+                                    current: newD,
+                                    changes: [],
+                                    invFunctions: this.tags[index].invFunctions,
+                                    invVariables: this.tags[index].invVariables,
+                                    org: newDOrg,
+                                    arr: arr.slice()
+                                });
+                                this.exeChildren(newD);
+                            } else {
+                                this.tags[index + o].current.forIndex = o;
                             }
-                            // @ts-ignore
-                        } else if (this.tags[index].arr.length < arr.length) {
-                            // this.tags.splice(index + 1, 0, {
-                            //     current: newD,
-                            //     changes: [],
-                            //     invFunctions: this.tags[index].invFunctions,
-                            //     invVariables: this.tags[index].invVariables,
-                            //     org: newDOrg
-                            // });
-                        } else {
-
+                        }
+                    }
+                    if (arr.length < tagArr.length) {
+                        this.tags[index].arr = arr.slice();
+                        for (let o = 1; o < tagArr.length; o++) {
+                            if (arr[o] !== tagArr[o]) {
+                                this.tags[index + o].current.remove();
+                                this.tags.splice(index + o, 1);
+                            } else {
+                                this.tags[index + o].current.forIndex = o;
+                            }
                         }
                     }
 
-                    this.tags[index].current.forIndex = 0;
-                    this.tags[index].current.forName = ff[1];
-                    this.tags[index].current.forOfName = ff[0];
-                    this.tags[index].arr = arr.slice();
-                    //     var ab = this.instance[ff[1]].slice();
-                    //     this.repeatChecking2(ab, this.instance, ff[1], this.tags[index].current, this.forTags.length - 1, testD);
-                    // this.tags[index].current.remove();
-                    // console.log(this.forTags);
-                    // this.tags[index].current.parentNode.insertBefore(newD, this.tags[index].current.nextSibling);
-                    // for (let k = 0; k < funcVariables.length; k++) {
-                    //     ff = ff.replace(funcVariables[k], "this.instance." + funcVariables[k]);
+                    // if (!this.tags[index].arr) {
+                    //     for (let i = 1; i < arr.length; i++) {
+                    //         var newD = this.tags[index].current.cloneNode(true);
+                    //         var newDOrg = this.tags[index].org.cloneNode(true);
+                    //         newDOrg.removeAttribute(newDOrg.attributes[j].nodeName);
+                    //         newD = this.mainElement.insertBefore(newD, this.tags[index].current.nextSibling);
+                    //         newD.forIndex = i;
+                    //         newD.forName = ff[1];
+                    //         newD.forOfName = ff[0];
+                    //         this.tags.splice(index + i, 0, {
+                    //             current: newD,
+                    //             changes: [],
+                    //             invFunctions: this.tags[index].invFunctions,
+                    //             invVariables: this.tags[index].invVariables,
+                    //             org: newDOrg,
+                    //             arr: arr.slice()
+                    //         });
+                    //         console.log(this.tags, index);
+                    //     }
+                    //
+                    // } else {
                     // }
-                    // var value = eval(ff);
-                    // var value = Function('"use strict";return (' + ff + ')')();
-                    // if (!value) {
-                    //     this.tags[index].current = value;
-                    // this.tags[index].current.remove();
-                    // }
+                    //
+                    // this.tags[index].current.forIndex = 0;
+                    // this.tags[index].current.forName = ff[1];
+                    // this.tags[index].current.forOfName = ff[0];
+                    // this.tags[index].arr = arr.slice();
                 }
+
+                // if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngfo\w+/)) {
+                //     console.log(3);
+                //     var ff = this.tags[index].org.attributes[j].value.split(' of ');
+                //     var nameOfIn = ff[0].split('let ')[1];
+                //     var arr = this.replaceNames(ff[1]);
+                //     let bigger: any = this.tags[index].arr;
+                //     let smaller = arr;
+                //     if (!bigger) {
+                //         bigger = [];
+                //     }
+                //     if (smaller.length > bigger.length) {
+                //         const temp = bigger;
+                //         bigger = arr;
+                //         smaller = temp;
+                //     }
+                //     for (let o = 0; o < bigger.length; o++) {
+                //         if (smaller[o] !== bigger[o]) {
+                //             console.log(444);
+                //             var newD = this.tags[index].current.cloneNode(true);
+                //             var newDOrg = this.tags[index].org.cloneNode(true);
+                //             newDOrg.removeAttribute(newDOrg.attributes[j].nodeName);
+                //             newD = this.mainElement.insertBefore(newD, this.tags[index + o].current.nextSibling);
+                //             newD.forIndex = o;
+                //             newD.forName = ff[1];
+                //             newD.forOfName = ff[0];
+                //             this.tags.splice(index + o, 0, {
+                //                 current: newD,
+                //                 changes: [],
+                //                 invFunctions: this.tags[index].invFunctions,
+                //                 invVariables: this.tags[index].invVariables,
+                //                 org: newDOrg,
+                //                 arr: arr.slice()
+                //             });
+                //             this.tags[index + o].current.forIndex = index + o;
+                //             this.tags[index + o].current.arr = arr.slice();
+                //             this.tags[index].current.forName = ff[1];
+                //             this.tags[index].current.forOfName = ff[0];
+                //         }
+                //     }
+                //     // console.log(this.tags);
+                // }
 
             }
         }
-        let mainSentence = '';
-        let sentence = '';
+        // if (this.tags[index].current.forIndex !== undefined) {
+        //     const arr = this.replaceNames(this.tags[index].current.forName);
+        //     const entryFor = index - this.tags[index].current.forIndex;
+        //     // @ts-ignore
+        //     if (this.tags[entryFor].arr[this.tags[index].current.forIndex] !== arr[this.tags[index].current.forIndex]) {
+        //         console.log(this.tags[entryFor].arr, arr);
+        //         // @ts-ignore
+        //         console.log(this.tags[entryFor].arr[this.tags[index].current.forIndex], arr[this.tags[index].current.forIndex]);
+        //         console.log(this.tags[index]);
+        //         this.tags[index].current.remove();
+        //         // @ts-ignore
+        //         this.tags[entryFor].arr.splice(this.tags[index].current.forIndex, 1);
+        //         console.log(this.tags[entryFor].arr);
+        //         // @ts-ignore
+        //         console.log(index, this.tags[index]);
+        //         // this.tags[index + c].current.remove();
+        //     }
+        //     // console.log(index);
+        // }
+
         // console.log(this.tags[index].current.textContent);
-        for (let i = 0; i < this.tags[index].current.textContent.length; i++) {
-            if ((sentence === '' || sentence === '{') && this.tags[index].current.textContent[i] === '{') {
-                sentence = sentence + this.tags[index].current.textContent[i];
-            } else if (sentence.length > 1) {
-                // console.log(sentence);
-                sentence = sentence + this.tags[index].current.textContent[i];
-                if (sentence[sentence.length - 1] === '}' && sentence[sentence.length - 2] === '}') {
-                    // @ts-ignore
-                    // console.log(sentence.match(/(?<=\{\{).+?(?=\}})/g)[0], this.replaceNames('getImageSource()'));
-                    // @ts-ignore
-                    mainSentence = mainSentence + this.replaceNames(sentence.match(/(?<=\{\{).+?(?=\}})/g)[0]);
-                    sentence = '';
-                    // console.log(mainSentence);
+        for (let b = 0; b < this.tags[index].org.childNodes.length; b++) {
+            if (this.tags[index].org.childNodes[b].nodeType === 3) {
+                let mainSentence = '';
+                let sentence = '';
+                // this.tags[index].org.childNodes[b].nodeValue = 5;
+                for (let i = 0; i < this.tags[index].org.childNodes[b].nodeValue.length; i++) {
+                    if ((sentence === '' || sentence === '{') && this.tags[index].org.childNodes[b].nodeValue[i] === '{') {
+                        sentence = sentence + this.tags[index].org.childNodes[b].nodeValue[i];
+                    } else if (sentence.length > 1) {
+                        // console.log(sentence);
+                        sentence = sentence + this.tags[index].org.childNodes[b].nodeValue[i];
+                        if (sentence[sentence.length - 1] === '}' && sentence[sentence.length - 2] === '}') {
+                            // @ts-ignore
+                            // console.log(sentence.match(/(?<=\{\{).+?(?=\}})/g)[0], this.replaceNames('getImageSource()'));
+                            // @ts-ignore
+                            mainSentence = mainSentence + this.replaceNames(sentence.match(/(?<=\{\{).+?(?=\}})/g)[0]);
+                            sentence = '';
+                            // console.log(mainSentence);
+                        }
+                    } else {
+                        mainSentence = mainSentence + this.tags[index].org.childNodes[b].nodeValue[i];
+                    }
                 }
-            } else {
-                mainSentence = mainSentence + this.tags[index].current.textContent[i];
+                this.tags[index].current.childNodes[b].nodeValue = mainSentence;
             }
         }
-        this.tags[index].current.textContent = mainSentence;
         // let htmlFuncs: any = this.tags[index].current.textContent.match(/(?<=\{{).+?(?=\}})/g);
         // // console.log(htmlFuncs);
         // // for (let i = 0; i < funcs.length; i++) {
@@ -627,6 +660,61 @@ export class MainCore {
         //         // instance[dd[0]].apply(instance, ggf);
         //     }
         // }
+    }
+
+    exeChildren(newD: any): void {
+        const children = newD.children;
+        if (children.length > 0) {
+            for (let i = 0; i < children.length; i++) {
+                const org = children[i].cloneNode(true);
+                const targetObject: any = {
+                    org: org,
+                    current: children[i],
+                    changes: [],
+                    invVariables: [],
+                    invFunctions: [],
+                    parent: newD
+                };
+                children[i].uniqId = Math.random() * 10000;
+                for (let j = 0; j < org.attributes.length; j++) {
+                    if (org.attributes[j]) {
+                        if (!org.attributes[j].nodeName.match(/\(.*?\)/)) {
+                            const split = children[i].attributes[j].value.split(';');
+                            for (let k = 0; k < split.length; k++) {
+                                const perSplit = split[k].split('(');
+                                if (perSplit.length > 1) {
+                                    for (let m = 0; m < this.classFunctions.length; m++) {
+                                        perSplit[0] = perSplit[0].replace('!', '');
+                                        perSplit[0] = perSplit[0].replace('+', '');
+                                        if (perSplit[0] === this.classFunctions[m]) {
+                                            // @ts-ignore
+                                            targetObject.invFunctions.push(this.classFunctions[m]);
+                                        }
+                                    }
+                                } else {
+                                    const varSplit = split[k].split(' =');
+                                    for (let m = 0; m < this.classVariables.length; m++) {
+                                        varSplit[0] = varSplit[0].replace('!', '');
+                                        varSplit[0] = varSplit[0].replace('+', '');
+                                        if (varSplit[0] === this.classVariables[m]) {
+                                            // @ts-ignore
+                                            targetObject.invVariables.push(this.classVariables[m]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                this.tags.push(targetObject);
+                console.log(this.tags.length - 1);
+                // console.log(this.tags);
+                console.log(children[i]);
+                // this.updateTag(this.tags.length - 1);
+                this.exeChildren(children[i]);
+            }
+        } else {
+        }
     }
 
     replaceNames(hh: any) {

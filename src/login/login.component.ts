@@ -102,6 +102,9 @@ export class LoginComponent {
         // for (let i = 0; i < 30; i++) {
         // this.arr.push(Math.random() * 100);
         this.arr.pop();
+        // this.arr.splice(1, 3);
+        // this.arr[1] = 10;
+        // this.arr.splice(1, 1);
         // this.havij = Math.random().toString();
         // console.log(this.havij);
         // }
@@ -112,6 +115,15 @@ export class LoginComponent {
         //     }
         // }, 1000);
         // console.log(this.arr);
+    }
+
+    onClickBox3() {
+        this.arr.push(Math.random() * 100);
+        // this.arr.push(Math.random() * 100);
+    }
+
+    onClickBox4() {
+        this.arr[1] = 10;
     }
 
     onClickBox(x: number) {

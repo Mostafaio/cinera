@@ -2,10 +2,21 @@
 <button (click)="onClickR(2,true);getImageSource3(inpVal, havij);getImageSource3(inpVal, havij)">Change 1</button>
 <button (click)="onClickR(1, false)">Change 2</button>
 <button (click)="onClickBox2()">Change 3</button>
-<a [href]="havij + 5+havij + inpVal + '10' + test5() + test4(havij)">asdsad</a>
+<button (click)="onClickBox3()">Change 4</button>
+<button (click)="onClickBox4()">Change 5</button>
+<a [href]="havij + 5+havij + inpVal + '10' + test5() + test4(havij)">{{ arr[1] }}</a>
 <p>gggg</p>
-<a *ngFor="let ar of arr" style="color: rgba(165,15,165,0.67)" [href]="havij">{{ havij }}</a>
-<p *ngIf="isShow">gogoooli {{ isShow }}</p>K
+<div *ngFor="let ar of arr" style="color: rgba(165,15,165,0.67)" [rr]="arr[1]">
+    {{ arr[1] }}
+    <div>
+        <p>
+            <a [href]="havij">{{ havij }}</a>
+        </p>
+    </div>
+    <a [href]="inpVal">5454</a>
+</div>
+<p *ngIf="isShow">gogoooli {{ isShow }}</p>
+
 <p *ngIf="!isShow">hjjjjjjjj {{ isShow }}</p>
 <p [ngStyle]="getBool(true) ? {background: '#000', color: 'red'} : {background: '#dadada'}">hoora</p>
 <p [ngClass]="getBool(true) ? 'selected jijo' : 'not-selected'">Goola</p>
