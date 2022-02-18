@@ -106,7 +106,7 @@ const core = new Core();
 const mainCore = new MainCore();
 
 
-mainCore.buildNewComponent(loginInstance).then((bootstrapHTML) => {
+mainCore.buildNewComponent(loginInstance, declarations).then((bootstrapHTML) => {
     document.body.appendChild(bootstrapHTML);
     // loop(loginInstance, core);
     // attachHTMLToPage();

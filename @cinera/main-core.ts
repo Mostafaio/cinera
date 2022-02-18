@@ -1,3 +1,5 @@
+import {Handler} from "./handler";
+
 export class MainCore {
     tags: { org: any, current: any, changes: any[], invVariables: [], invFunctions: [], arr?: any[], parent?: any }[] = [];
     instance: any;
@@ -6,14 +8,20 @@ export class MainCore {
     testoli: any;
     classFunctions: any;
     classVariables: any;
+    declarations:any;
+    name = 'comp_';
 
     constructor() {
+        this.name = this.name + Math.round(Math.random() * 10000);
+        console.log(this.name);
         // super(props);
 
     }
 
-    buildNewComponent(instance: any) {
+    buildNewComponent(instance: any, declarations: any) {
         this.instance = instance;
+        this.declarations = declarations;
+        console.log(this.declarations);
         var instancePrototype = Object.getPrototypeOf(instance);
         var path = 'src/' + instancePrototype.mainPath + '/';
         var tempHtmlLoc = path + instancePrototype.obj.templateUrl.replace('./', '');
@@ -24,7 +32,7 @@ export class MainCore {
         this.classVariables = classVariables;
         var classFuncVars = classVariables.concat(classFunctions);
         // @ts-ignore
-        window['aobj'] = {
+        window[this.name] = {
             variables: {},
             functions: {}
         };
@@ -32,15 +40,16 @@ export class MainCore {
             // @ts-ignore
             // console.log(window['aobj']);
             // @ts-ignore
-            window.aobj.variables[classVariables[i]] = this.instance[classVariables[i]];
+            window[this.name].variables[classVariables[i]] = this.instance[classVariables[i]];
         }
         for (let i = 1; i < classFunctions.length; i++) {
             // instance[dd[0]].apply(instance, dd[1].split(','))
             // @ts-ignore
-            window.aobj.functions[classFunctions[i]] = (a, b, c, d, f, g, h, j, k, l) => {
+            window[this.name].functions[classFunctions[i]] = (a, b, c, d, f, g, h, j, k, l) => {
                 return this.instance[classFunctions[i]](a, b, c, d, f, g, h, j, k, l);
             };
         }
+        console.log(window);
         // @ts-ignore
         for (let m = 0; m < classVariables.length; m++) {
             var ingg = instance[classVariables[m]];
@@ -88,10 +97,12 @@ export class MainCore {
             mainElement.innerHTML = htmlSource;
             this.mainElement = mainElement;
             var children = [];
+            var children2 = [];
             var tempTags = mainElement.getElementsByTagName('*');
             for (let i = 0; i < tempTags.length; i++) {
                 if (tempTags[i].nodeType !== 3) {
                     children.push(tempTags[i]);
+                    children2.push(i);
                 }
             }
             for (let i = 0; i < children.length; i++) {
@@ -164,7 +175,7 @@ export class MainCore {
                 this.updateTag(i);
             }
             // console.log(this.tags);
-            return mainElement;
+            return this.mainElement;
         });
     }
 
@@ -215,7 +226,7 @@ export class MainCore {
                     oldValue = obj2;
                 }
                 // @ts-ignore
-                window.aobj.variables[varName] = oldValue;
+                window[this.name].variables[varName] = oldValue;
                 for (let i = 0; i < this.tags.length; i++) {
                     if (this.tags[i].current.forIndex !== undefined) {
                         var founds = this.tags[i - this.tags[i].current.forIndex].invVariables.filter((v: any) => v === varName);
@@ -284,6 +295,12 @@ export class MainCore {
         // console.log(instance[funcVariables[i]]);
         //     isTarget = true;
         // }
+        for (let i = 0; i < this.declarations.length; i++) {
+            if (this.declarations[i].prototype.obj.selector === this.tags[index].current.nodeName.toLowerCase()) {
+                const handler = new Handler(this.declarations[i].prototype.obj.selector, this.declarations, this.tags[index]);
+                console.log(666);
+            }
+        }
 
         if (this.tags[index].org.attributes.length > 0) {
             for (let j = 0; j < this.tags[index].org.attributes.length; j++) {
@@ -707,9 +724,7 @@ export class MainCore {
                     }
                 }
                 this.tags.push(targetObject);
-                console.log(this.tags.length - 1);
                 // console.log(this.tags);
-                console.log(children[i]);
                 // this.updateTag(this.tags.length - 1);
                 this.exeChildren(children[i]);
             }
@@ -725,16 +740,28 @@ export class MainCore {
         var aa = 'adasd';
         // console.log('havok 4545 adasd'.replace(/\{{aa}}/g, 'golabi'));
         // console.log('.aobj.aobj.haaaaa'.replace(/\.aobj\.aobj/g, '.aobj'));
+        // for (let m = 0; m < classVariables.length; m++) {
+        //     var regex = "\s*" + classVariables[m] + "\s*";
+        //     withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), this.name + '\.variables.' + classVariables[m]);
+        //     withoutSpace = withoutSpace.replace('/' + this.name + '\.variables\.' + this.name + '\.variables/g', this.name + '\.variables');
+        // }
+        // for (let m = 0; m < classFunctions.length; m++) {
+        //     var regex = "\s*" + classFunctions[m] + "\s*";
+        //     withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), this.name + '.functions.' + classFunctions[m]);
+        //     withoutSpace = withoutSpace.replace('/' + this.name + '\.functions\.' + this.name + '\.functions/g', this.name + '\.functions');
+        //     console.log(withoutSpace);
+        //     withoutSpace = withoutSpace.replace(/aaobj\.functions\./g, 'a');
+        // }
         for (let m = 0; m < classVariables.length; m++) {
             var regex = "\s*" + classVariables[m] + "\s*";
-            withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), 'aobj\.variables.' + classVariables[m]);
-            withoutSpace = withoutSpace.replace(/aobj\.variables\.aobj\.variables/g, 'aobj\.variables');
+            withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), this.name + '\.variables.' + classVariables[m]);
+            withoutSpace = withoutSpace.replace(new RegExp(this.name + '\.variables\.' + this.name + '\.variables', "g"), this.name + '\.variables');
         }
         for (let m = 0; m < classFunctions.length; m++) {
             var regex = "\s*" + classFunctions[m] + "\s*";
-            withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), 'aobj.functions.' + classFunctions[m]);
-            withoutSpace = withoutSpace.replace(/aobj\.functions\.aobj\.functions/g, 'aobj\.functions');
-            withoutSpace = withoutSpace.replace(/aaobj\.functions\./g, 'a');
+            withoutSpace = withoutSpace.replace(new RegExp(regex, "g"), this.name + '.functions.' + classFunctions[m]);
+            withoutSpace = withoutSpace.replace(new RegExp(this.name + '\.functions\.' + this.name + '\.functions', "g"), this.name + '\.functions');
+            // withoutSpace = withoutSpace.replace(/aaobj\.functions\./g, 'a');
         }
         return Function("return " + withoutSpace)();
     }
