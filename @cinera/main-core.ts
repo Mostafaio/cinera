@@ -18,7 +18,7 @@ export class MainCore {
 
     }
 
-    buildNewComponent(instance: any, declarations: any) {
+    buildNewComponent(instance: any, declarations: any, mainTag: any = null) {
         this.instance = instance;
         this.declarations = declarations;
         console.log(this.declarations);
@@ -93,9 +93,19 @@ export class MainCore {
         });
         // console.log(classVariables);
         return this.getHTMLSource(tempHtmlLoc).then((htmlSource: string) => {
-            var mainElement = document.createElement(instancePrototype.obj.selector);
-            mainElement.innerHTML = htmlSource;
-            this.mainElement = mainElement;
+
+            if (mainTag) {
+                console.log(mainTag);
+                mainTag.current.innerHTMl = htmlSource;
+                mainTag.org.innerHTMl = htmlSource;
+                mainTag.current.innerHTML = htmlSource;
+                this.mainElement = mainTag.current;
+                mainElement = mainTag.current;
+            } else {
+                var mainElement = document.createElement(instancePrototype.obj.selector);
+                mainElement.innerHTML = htmlSource;
+                this.mainElement = mainElement;
+            }
             var children = [];
             var children2 = [];
             var tempTags = mainElement.getElementsByTagName('*');

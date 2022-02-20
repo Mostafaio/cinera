@@ -10,12 +10,21 @@ export class Handler {
     }
 
     createHTML(mainCore: any) {
+        console.log(this.tag);
         const classIndex = this.declarations.findIndex((v: any) => v.prototype.obj.selector === this.selectorName);
         const inst = new this.declarations[classIndex];
-        mainCore.buildNewComponent(inst, this.declarations).then((instHTML: any) => {
+        // if (this.selectorName === 'app-profile') {
+        //     this.tag.current.remove();
+        // }
+        mainCore.buildNewComponent(inst, this.declarations, this.tag).then((instHTML: any) => {
             console.log(instHTML);
             // this.tag.org.innerHTML = instHTML.innerHTML;
-            this.tag.current.innerHTML = instHTML.innerHTML;
+
+            // this.tag.current.innerHTML = instHTML.innerHTML;
+
+            var tempTags = document.getElementsByTagName('*');
+            console.log([tempTags]);
+
             console.log(this.tag.current);
         });
         // document.body.appendChild(bootstrapHTML);

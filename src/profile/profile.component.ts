@@ -10,4 +10,8 @@ export class ProfileComponent {
 
     constructor() {
     }
+
+    onClick(): void {
+        this.profileMsg = (Math.random() * 100).toString();
+    }
 }
