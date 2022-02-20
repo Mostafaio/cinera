@@ -1,4 +1,5 @@
 import {Component} from "../../@cinera/component";
+import {SharedService} from "../shared/services/shared.service";
 
 // function baseEntity(ctr: Function) {
 //     console.log(ctr);
@@ -36,9 +37,21 @@ export class RegisterComponent {
     hg = 0;
     kio = 200;
     tColor = '#7b087b';
+    profileMsg = 'Man Profile aaa!';
 
-    constructor(public name: string) {
+    constructor(public name: string,
+                private sharedService: SharedService) {
         this.hg = Math.random() * 10;
+        setTimeout(() => {
+            console.log(this.sharedService.hh);
+            // this.testVar = 20;
+            // this.objTest.a = 50;
+            // this.imageSourceeee = '3423432432423';
+        }, 3000);
+    }
+
+    onInit() {
+        console.log(444);
     }
 
     find() {

@@ -3,6 +3,7 @@ import {RegisterComponent} from "./src/register/register.component";
 import {Core} from "./@cinera/core";
 import {ProfileComponent} from "./src/profile/profile.component";
 import {MainCore} from "./@cinera/main-core";
+import {Injector} from "./@cinera/injector";
 
 export class Main {
     title: string = 'aaaa';
@@ -99,7 +100,9 @@ var declarations: any[] = [
 
 // console.log((declarations[0].prototype as any));
 
-var loginInstance = new bootstrap();
+// var loginInstance = new bootstrap();
+// var loginInstance = new bootstrap();
+var loginInstance = Injector.resolve(bootstrap);
 // var ad = new declarations[1]();
 // var ad2 = new declarations[1]();
 const core = new Core();

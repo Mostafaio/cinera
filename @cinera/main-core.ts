@@ -8,12 +8,11 @@ export class MainCore {
     testoli: any;
     classFunctions: any;
     classVariables: any;
-    declarations:any;
+    declarations: any;
     name = 'comp_';
 
     constructor() {
         this.name = this.name + Math.round(Math.random() * 10000);
-        console.log(this.name);
         // super(props);
 
     }
@@ -21,7 +20,6 @@ export class MainCore {
     buildNewComponent(instance: any, declarations: any, mainTag: any = null) {
         this.instance = instance;
         this.declarations = declarations;
-        console.log(this.declarations);
         var instancePrototype = Object.getPrototypeOf(instance);
         var path = 'src/' + instancePrototype.mainPath + '/';
         var tempHtmlLoc = path + instancePrototype.obj.templateUrl.replace('./', '');
@@ -49,7 +47,6 @@ export class MainCore {
                 return this.instance[classFunctions[i]](a, b, c, d, f, g, h, j, k, l);
             };
         }
-        console.log(window);
         // @ts-ignore
         for (let m = 0; m < classVariables.length; m++) {
             var ingg = instance[classVariables[m]];
@@ -95,7 +92,6 @@ export class MainCore {
         return this.getHTMLSource(tempHtmlLoc).then((htmlSource: string) => {
 
             if (mainTag) {
-                console.log(mainTag);
                 mainTag.current.innerHTMl = htmlSource;
                 mainTag.org.innerHTMl = htmlSource;
                 mainTag.current.innerHTML = htmlSource;
@@ -124,6 +120,39 @@ export class MainCore {
                     invVariables: [],
                     invFunctions: []
                 });
+                let htmlVariables: any = children[i].innerHTML.match(/\{{(.*?)\}}/g);
+                if (htmlVariables) {
+                    const split = htmlVariables[0].split(';');
+                    for (let k = 0; k < split.length; k++) {
+                        const perSplit = split[k].split('(');
+                        if (perSplit.length > 1) {
+                            for (let m = 0; m < classFunctions.length; m++) {
+                                perSplit[0] = perSplit[0].replace('!', '');
+                                perSplit[0] = perSplit[0].replace('+', '');
+                                if (perSplit[0].includes(classFunctions[m])) {
+                                    // @ts-ignore
+                                    this.tags[i].invFunctions.push(classFunctions[m]);
+                                }
+                            }
+                        } else {
+                            const varSplit = split[k].split(' =');
+                            for (let m = 0; m < classVariables.length; m++) {
+                                varSplit[0] = varSplit[0].replace('!', '');
+                                varSplit[0] = varSplit[0].replace('+', '');
+                                if (varSplit[0].includes(classVariables[m])) {
+                                    // @ts-ignore
+                                    this.tags[i].invVariables.push(classVariables[m]);
+                                }
+                            }
+                        }
+                    }
+                }
+                // if (htmlVariables) {
+                //     for (let m = 0; m < classVariables.length; m++) {
+                //         // @ts-ignore
+                //         this.tags[i].invVariables.push(classVariables[m]);
+                //     }
+                // }
                 for (let j = 0; j < children[i].attributes.length; j++) {
                     if (this.tags[i].org.attributes[j]) {
                         if (!this.tags[i].org.attributes[j].nodeName.match(/\(.*?\)/)) {
@@ -241,7 +270,6 @@ export class MainCore {
                     if (this.tags[i].current.forIndex !== undefined) {
                         var founds = this.tags[i - this.tags[i].current.forIndex].invVariables.filter((v: any) => v === varName);
                         if (founds.length > 0) {
-                            console.log(66);
                             this.updateTag(i - this.tags[i].current.forIndex);
                         }
                     } else {
@@ -308,7 +336,8 @@ export class MainCore {
         for (let i = 0; i < this.declarations.length; i++) {
             if (this.declarations[i].prototype.obj.selector === this.tags[index].current.nodeName.toLowerCase()) {
                 const handler = new Handler(this.declarations[i].prototype.obj.selector, this.declarations, this.tags[index]);
-                console.log(666);
+                // console.log(666);
+                this.instance['onInit']();
             }
         }
 
@@ -469,7 +498,6 @@ export class MainCore {
                 // *ngFor
                 // if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngfo\w+/) && this.tags[index].current.forIndex === undefined) {
                 if (this.tags[index].org.attributes[j].nodeName.match(/\B\*ngfo\w+/)) {
-                    console.log(333);
                     let tagArr: any = [];
                     if (this.tags[index].arr) {
                         tagArr = this.tags[index].arr;
@@ -483,7 +511,6 @@ export class MainCore {
                     // @ts-ignore
                     this.tags[index].invVariables.push(ff[1]);
 
-                    console.log(arr, tagArr);
                     if (arr.length === tagArr.length) {
                         this.tags[index].arr = arr.slice();
                         for (let o = 0; o < arr.length; o++) {
@@ -773,6 +800,7 @@ export class MainCore {
             withoutSpace = withoutSpace.replace(new RegExp(this.name + '\.functions\.' + this.name + '\.functions', "g"), this.name + '\.functions');
             // withoutSpace = withoutSpace.replace(/aaobj\.functions\./g, 'a');
         }
+        // console.log(withoutSpace);
         return Function("return " + withoutSpace)();
     }
 

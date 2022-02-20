@@ -1,4 +1,7 @@
 import {Component} from "../../@cinera/component";
+import {SharedService} from "../shared/services/shared.service";
+import {Route} from "../../@cinera/route";
+import {PostsModel} from "../shared/models/posts.model";
 
 // function baseEntity(ctr: Function) {
 //     console.log(ctr);
@@ -44,9 +47,37 @@ export class LoginComponent {
     };
     randImage = false;
     hav = 'dsds';
+    posts: any = false;
+    post0Title = '';
+    post0Image = '';
+    post1Title = '';
+    post1Image = '';
 
-    constructor() {
+    constructor(private sharedService: SharedService,
+                private route: Route) {
+        this.sharedService.getData().subscribe(
+            (data: any) => {
+                this.posts = data;
+                this.post0Title = this.posts[0].title;
+                this.post0Image = 'https://api.poralist.com/api-v1/files/file-test' + this.posts[0].image;
+                this.post1Title = this.posts[1].title;
+                this.post1Image = 'https://api.poralist.com/api-v1/files/file-test' + this.posts[1].image;
+                console.log(this.posts);
+            }
+        );
+        // this.sharedService.sendData('https://api.poralist.com/api-v1/ads/page/0', {"filters":{"search":"","main":true,"price":90000000,"gPrice":0,"category":"6108d7f682553205f350bad5"},"sort":{"type":"date","order":"-1"}}).subscribe();
+        this.havij = this.sharedService.hh;
+
+
+        this.sharedService.hh = '6666';
+        // this.sharedService.getData().subscribe(
+        //     (data: any) => {
+        //         console.log(data.count);
+        //         console.log(data);
+        //     }
+        // );
         setTimeout(() => {
+            console.log(this.sharedService.hh);
             // this.testVar = 20;
             // this.objTest.a = 50;
             // this.imageSourceeee = '3423432432423';
@@ -87,6 +118,11 @@ export class LoginComponent {
             // @ts-ignore
             return this.getImageSource2(x);
         };
+        console.log(222.);
+    }
+
+    onInit() {
+        console.log(444);
     }
 
     test4(havij: any) {

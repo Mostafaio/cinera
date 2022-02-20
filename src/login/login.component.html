@@ -7,6 +7,24 @@
 <button (click)="onClickBox4()">Change 5</button>
 <a [href]="havij + 5+havij + inpVal + '10' + test5() + test4(havij)">{{ arr[1] }}</a>
 <p>gggg</p>
+<div class="row">
+    <div class="col-md-4">
+        <div class="blog-box">
+            <img [src]="post0Image" alt="">
+            <h3>{{ post0Title }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="blog-box">
+            <img [src]="post1Image" alt="">
+            <h3>{{ post1Title }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+
+    </div>
+</div>
+
 <div *ngFor="let ar of arr" style="color: rgba(165,15,165,0.67)" [rr]="arr[1]">
     {{ arr[1] }}
     <div>

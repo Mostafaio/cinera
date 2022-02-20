@@ -6,6 +6,7 @@
 // import templateString from "../src/login/login.component.html";
 // @ts-ignore
 // import cssString from "../src/login/login.component.css";
+import {Injector} from "./injector";
 
 export function Component(obj: { selector: string, templateUrl: string, styleUrl: string }, mainPath: string) {
     //  {{  }}
@@ -24,6 +25,10 @@ export function Component(obj: { selector: string, templateUrl: string, styleUrl
     // console.log(ctr.prototype.id);
 
     return <any>function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        // console.log(Reflect.getMetadata('design:paramtypes', target));
+        // console.log(target);
+        // const example = Injector.resolve(target);
+        // console.log(example);
         target.prototype.obj = obj;
         target.prototype.mainPath = mainPath;
         // var cc = [Test2];

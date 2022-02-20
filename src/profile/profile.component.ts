@@ -11,7 +11,12 @@ export class ProfileComponent {
     constructor() {
     }
 
+    onInit() {
+        console.log(444);
+    }
+
     onClick(): void {
         this.profileMsg = (Math.random() * 100).toString();
+        console.log(this.profileMsg);
     }
 }
