@@ -43,7 +43,7 @@ export class RegisterComponent {
                 private sharedService: SharedService) {
         this.hg = Math.random() * 10;
         setTimeout(() => {
-            console.log(this.sharedService.hh);
+            // console.log(this.sharedService.hh);
             // this.testVar = 20;
             // this.objTest.a = 50;
             // this.imageSourceeee = '3423432432423';
@@ -51,7 +51,7 @@ export class RegisterComponent {
     }
 
     onInit() {
-        console.log(444);
+        // console.log(444);
     }
 
     find() {

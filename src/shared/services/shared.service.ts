@@ -9,7 +9,7 @@ export class SharedService {
     hh = 'hhh';
 
     constructor(private http: HttpClient) {
-        console.log(this.http);
+        // console.log(this.http);
     }
 
     havij() {

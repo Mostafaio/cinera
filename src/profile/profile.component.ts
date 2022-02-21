@@ -1,4 +1,5 @@
 import {Component} from "../../@cinera/component";
+import {Route} from "../../@cinera/route";
 
 @Component({
     selector: 'app-profile',
@@ -8,11 +9,12 @@ import {Component} from "../../@cinera/component";
 export class ProfileComponent {
     profileMsg = 'Man Profile hastam!';
 
-    constructor() {
+    constructor(private route: Route) {
+        console.log(this.route);
     }
 
     onInit() {
-        console.log(444);
+        // console.log(444);
     }
 
     onClick(): void {

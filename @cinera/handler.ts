@@ -1,5 +1,6 @@
 import {MainCore} from "./main-core";
 import {Injector} from "./injector";
+import {Route} from "./route";
 
 export class Handler {
     selector = '';
@@ -15,6 +16,7 @@ export class Handler {
         const classIndex = this.declarations.findIndex((v: any) => v.prototype.obj.selector === this.selectorName);
         // const inst = new this.declarations[classIndex];
         const inst = Injector.resolve(this.declarations[classIndex]);
+        const routeInstance = new Route();
         // if (this.selectorName === 'app-profile') {
         //     this.tag.current.remove();
         // }

@@ -17,11 +17,16 @@ export class MainCore {
 
     }
 
-    buildNewComponent(instance: any, declarations: any, mainTag: any = null) {
+    buildNewComponent(instance: any, moduleObject: any, mainTag: any = null) {
         this.instance = instance;
-        this.declarations = declarations;
+        console.log(this.instance);
+        console.log(moduleObject);
+        this.declarations = moduleObject.declarations;
         var instancePrototype = Object.getPrototypeOf(instance);
         var path = 'src/' + instancePrototype.mainPath + '/';
+        if (instancePrototype.mainPath === 'app') {
+            path = 'src/';
+        }
         var tempHtmlLoc = path + instancePrototype.obj.templateUrl.replace('./', '');
         var tempCSSLoc = path + instancePrototype.obj.styleUrl.replace('./', '');
         var classFunctions = Object.getOwnPropertyNames(instancePrototype);
@@ -337,7 +342,9 @@ export class MainCore {
             if (this.declarations[i].prototype.obj.selector === this.tags[index].current.nodeName.toLowerCase()) {
                 const handler = new Handler(this.declarations[i].prototype.obj.selector, this.declarations, this.tags[index]);
                 // console.log(666);
-                this.instance['onInit']();
+                if (this.instance['onInit']) {
+                    this.instance['onInit']();
+                }
             }
         }
 

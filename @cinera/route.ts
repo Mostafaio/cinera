@@ -3,6 +3,7 @@ import {Observable} from "rxjs";
 export class Route {
     url: string = '';
     rawUrl: string = '';
+    afterRawUrl: any = '';
     params: { title: string }[] = [];
 
     constructor() {
@@ -12,6 +13,8 @@ export class Route {
     getUrl() {
         this.url = window.location.href;
         this.rawUrl = this.url.split('?')[0];
+        this.afterRawUrl = this.url.split('/');
+        this.afterRawUrl = this.afterRawUrl[this.afterRawUrl.length - 1];
     }
 
     getQueryParams(): Observable<{ title: string }[]> {
@@ -57,7 +60,7 @@ export class Route {
         });
     }
 
-    navigate(url: string, params: {}) {
+    navigate(url: string, params?: {}) {
         window.history.pushState('page2', 'Title', url);
         if (this.url !== location.href) {
             console.log(this.url);

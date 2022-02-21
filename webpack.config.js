@@ -29,8 +29,10 @@ module.exports = {
         },
     },
     output: {
-        filename: 'bundle.js',
+        // filename: 'bundle.js',
+        // path: path.resolve(__dirname, 'dist'),
         path: path.resolve(__dirname, 'dist'),
+        filename: '[name].js',
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -42,6 +44,7 @@ module.exports = {
         static: {
             directory: path.join(__dirname, ''),
         },
+        historyApiFallback: true,
         compress: true,
         port: 9000,
     },

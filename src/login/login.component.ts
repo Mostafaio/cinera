@@ -62,7 +62,7 @@ export class LoginComponent {
                 this.post0Image = 'https://api.poralist.com/api-v1/files/file-test' + this.posts[0].image;
                 this.post1Title = this.posts[1].title;
                 this.post1Image = 'https://api.poralist.com/api-v1/files/file-test' + this.posts[1].image;
-                console.log(this.posts);
+                // console.log(this.posts);
             }
         );
         // this.sharedService.sendData('https://api.poralist.com/api-v1/ads/page/0', {"filters":{"search":"","main":true,"price":90000000,"gPrice":0,"category":"6108d7f682553205f350bad5"},"sort":{"type":"date","order":"-1"}}).subscribe();
@@ -77,7 +77,7 @@ export class LoginComponent {
         //     }
         // );
         setTimeout(() => {
-            console.log(this.sharedService.hh);
+            // console.log(this.sharedService.hh);
             // this.testVar = 20;
             // this.objTest.a = 50;
             // this.imageSourceeee = '3423432432423';
@@ -89,7 +89,7 @@ export class LoginComponent {
             // this.havij = '5555';
             // @ts-ignore
             window['inpVal'] = this.inpVal;
-            console.log(11);
+            // console.log(11);
         }, 4000);
         // setInterval(() => {
         //     this.arr2.push(Math.random() * 100);
@@ -118,11 +118,11 @@ export class LoginComponent {
             // @ts-ignore
             return this.getImageSource2(x);
         };
-        console.log(222.);
+        // console.log(222.);
     }
 
     onInit() {
-        console.log(444);
+        // console.log(444);
     }
 
     test4(havij: any) {
