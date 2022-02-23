@@ -11,7 +11,8 @@ export function CModule(obj: {
 } | any): any {
     return <any>function (target: any) {
         if (document.location.origin + '/' !== location.href && location.href[location.href.length - 1] === '/') {
-            location.href = location.href.substr(0, location.href.length - 1);
+            // location.href = location.href.substr(0, location.href.length - 1);
+            window.history.pushState('page2', 'Title', location.href.substr(0, location.href.length - 1));
         }
         console.log([target]);
         target.obj = obj;
