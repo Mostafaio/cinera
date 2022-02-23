@@ -10,8 +10,7 @@ export function CModule(obj: {
     routes?: any[]
 } | any): any {
     return <any>function (target: any) {
-        console.log(location.href);
-        if (location.href[location.href.length - 1] === '/') {
+        if (document.location.origin + '/' !== location.href && location.href[location.href.length - 1] === '/') {
             location.href = location.href.substr(0, location.href.length - 1);
         }
         console.log([target]);
