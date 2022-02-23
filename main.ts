@@ -7,13 +7,13 @@ import {Route} from "./@cinera/route";
 import {Injector} from "./@cinera/injector";
 import {AppModule} from "./src/app.module";
 
+
 export class Main {
     title: string = 'aaaa';
 
     constructor() {
     }
 }
-
 const appModule: any = AppModule;
 
 // const element = document.createElement('div');
