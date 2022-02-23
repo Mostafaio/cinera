@@ -10,6 +10,7 @@ export class MainCore {
     classVariables: any;
     declarations: any;
     name = 'comp_';
+    mainClass: any;
 
     constructor() {
         this.name = this.name + Math.round(Math.random() * 10000);
@@ -17,7 +18,8 @@ export class MainCore {
 
     }
 
-    buildNewComponent(instance: any, moduleObject: any, mainTag: any = null) {
+    buildNewComponent(instance: any, moduleObject: any, mainTag: any = null, mainClass: any = null) {
+        this.mainClass = mainClass;
         this.instance = instance;
         console.log(this.instance);
         console.log(moduleObject);
@@ -28,16 +30,24 @@ export class MainCore {
             path = 'src/';
         }
         var tempHtmlLoc = path + instancePrototype.obj.templateUrl.replace('./', '');
+        tempHtmlLoc = __dirname + tempHtmlLoc;
         var tempCSSLoc = path + instancePrototype.obj.styleUrl.replace('./', '');
+        tempCSSLoc = __dirname + tempCSSLoc;
         var classFunctions = Object.getOwnPropertyNames(instancePrototype);
         var classVariables = Object.keys(instance);
         this.classFunctions = classFunctions;
         this.classVariables = classVariables;
         var classFuncVars = classVariables.concat(classFunctions);
+        if (moduleObject.bootstrap) {
+            if (moduleObject.bootstrap.length > 0) {
+                this.name = 'comp_app';
+            }
+        }
         // @ts-ignore
         window[this.name] = {
             variables: {},
-            functions: {}
+            functions: {},
+            instance: this.instance
         };
         for (let i = 0; i < classVariables.length; i++) {
             // @ts-ignore
@@ -225,7 +235,14 @@ export class MainCore {
 
     changeFunctionDetection(oldValue: any, functionName: any, args: any) {
         if (oldValue) {
-            setInterval(() => {
+            let refreshIntervalId = setInterval(() => {
+                // @ts-ignore
+                if (!window[this.name]) {
+                    // @ts-ignore
+                    delete this;
+                    clearInterval(refreshIntervalId);
+                    return;
+                }
                 let obj2 = this.instance[functionName].apply(this.instance, args.split(','));
                 // obj2 = this.instance[variableName];
                 if (JSON.stringify(obj2) !== JSON.stringify(oldValue)) {
@@ -250,7 +267,14 @@ export class MainCore {
 
     changeDetection(oldValue: any, varName: string) {
         // if (oldValue) {
-        setInterval(() => {
+        let refreshIntervalId = setInterval(() => {
+            // @ts-ignore
+            if (!window[this.name]) {
+                // @ts-ignore
+                delete this;
+                clearInterval(refreshIntervalId);
+                return;
+            }
             let obj2 = this.instance[varName];
             // obj2 = this.instance[variableName];
             if (JSON.stringify(obj2) !== JSON.stringify(oldValue)) {
@@ -338,16 +362,26 @@ export class MainCore {
         // console.log(instance[funcVariables[i]]);
         //     isTarget = true;
         // }
-        for (let i = 0; i < this.declarations.length; i++) {
-            if (this.declarations[i].prototype.obj.selector === this.tags[index].current.nodeName.toLowerCase()) {
-                const handler = new Handler(this.declarations[i].prototype.obj.selector, this.declarations, this.tags[index]);
-                // console.log(666);
-                if (this.instance['onInit']) {
-                    this.instance['onInit']();
+        if (this.declarations) {
+            for (let i = 0; i < this.declarations.length; i++) {
+                if (this.declarations[i].prototype.obj.selector === this.tags[index].current.nodeName.toLowerCase()) {
+                    const handler = new Handler(this.declarations[i].prototype.obj.selector, this.declarations, this.tags[index]);
+                    // console.log(666);
+                    if (this.instance['onInit']) {
+                        this.instance['onInit']();
+                    }
+                }
+            }
+        } else {
+            if (instancePrototype.obj) {
+                if (instancePrototype.obj.selector === this.tags[index].current.nodeName.toLowerCase()) {
+                    const handler = new Handler(instancePrototype.obj.selector, this.declarations, this.tags[index]);
+                    if (this.instance['onInit']) {
+                        this.instance['onInit']();
+                    }
                 }
             }
         }
-
         if (this.tags[index].org.attributes.length > 0) {
             for (let j = 0; j < this.tags[index].org.attributes.length; j++) {
                 // directives with brackets []

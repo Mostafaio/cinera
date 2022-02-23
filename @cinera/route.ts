@@ -14,7 +14,9 @@ export class Route {
         this.url = window.location.href;
         this.rawUrl = this.url.split('?')[0];
         this.afterRawUrl = this.url.split('/');
-        this.afterRawUrl = this.afterRawUrl[this.afterRawUrl.length - 1];
+        // console.log(document.location);
+        this.afterRawUrl = document.location.pathname;
+        console.log(this.afterRawUrl);
     }
 
     getQueryParams(): Observable<{ title: string }[]> {
@@ -38,7 +40,7 @@ export class Route {
         });
     }
 
-    urlChanges(): Observable<{ preUrl: string, url: string }> {
+    urlChanges(): Observable<{ preUrl: string, url: string, pathName: string }> {
         var preUrl = this.url;
         return new Observable(subscriber => {
             window.onpopstate = (event) => {
@@ -47,16 +49,22 @@ export class Route {
                     if (event.state) {
                         // history changed because of pushState/replaceState
                         console.warn('THEY DID IT AGAIN222!');
+                        subscriber.next({
+                            preUrl: preUrl,
+                            url: this.url,
+                            pathName: document.location.pathname
+                        });
                     } else {
                         // history changed because of a page load
                         console.warn('THEY DID IT AGAIN!');
+                        subscriber.next({
+                            preUrl: preUrl,
+                            url: this.url,
+                            pathName: document.location.pathname
+                        });
                     }
                 }
             }
-            subscriber.next({
-                preUrl: preUrl,
-                url: this.url
-            });
         });
     }
 

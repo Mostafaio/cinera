@@ -4,8 +4,8 @@
   "description": "",
   "main": "main.ts",
   "scripts": {
-    "start": "webpack serve --open --mode=development",
-    "test": "webpack serve --open --mode=development",
+    "start": "webpack serve --mode=development",
+    "test": "webpack serve --mode=development",
     "tsc": "tsc"
   },
   "keywords": [],

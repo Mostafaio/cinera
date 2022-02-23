@@ -3,6 +3,7 @@ import {RegisterComponent} from "./src/register/register.component";
 import {Core} from "./@cinera/core";
 import {ProfileComponent} from "./src/profile/profile.component";
 import {MainCore} from "./@cinera/main-core";
+import {Route} from "./@cinera/route";
 import {Injector} from "./@cinera/injector";
 import {AppModule} from "./src/app.module";
 
@@ -13,26 +14,141 @@ export class Main {
     }
 }
 
-const appModule = AppModule;
+const appModule: any = AppModule;
 
-const element = document.createElement('div');
-const button = document.createElement('button');
-button.innerHTML = '222';
-element.appendChild(button);
+// const element = document.createElement('div');
+// const button = document.createElement('button');
+// button.innerHTML = '222';
+// element.appendChild(button);
 
 // Note that because a network request is involved, some indication
 // of loading would need to be shown in a production-level site/app.
-button.onclick = e => import(/* webpackChunkName: "print" */ './src/register.module').then(module => {
-    const print = module.RegisterModule;
-    console.log(print);
-});
-document.body.appendChild(element);
-console.log(2);
-// var agg = document.createElement('link');
-// agg.setAttribute('href', 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css');
-// agg.setAttribute('rel', 'stylesheet');
-//
-// document.head.appendChild(agg);
+// button.onclick = e => import(/* webpackChunkName: "print" */ './src/register.module').then(module => {
+//     const print = module.RegisterModule;
+//     console.log(print);
+// });
+// document.body.appendChild(element);
+// console.log(2);
+var agg = document.createElement('link');
+agg.setAttribute('href', 'https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css');
+agg.setAttribute('rel', 'stylesheet');
+
+document.head.appendChild(agg);
+
+const route = new Route();
+
+route.urlChanges().subscribe(
+    (data: any) => {
+        console.log(window);
+        const split = data.pathName.split('/');
+        for (let i = 0; i < appModule.routes.length; i++) {
+            if (appModule.routes[i].path === split[1]) {
+                console.log(split);
+                console.log(appModule);
+                console.log(data);
+                if (appModule.routes[i].component) {
+                    console.log(2);
+                    const instance = Injector.resolve(appModule.routes[i].component);
+                    const mainCore = new MainCore();
+                    console.log(1);
+                    const tempWindow: any = Object.keys(window);
+                    console.log(tempWindow);
+                    for (let j = 0; j < tempWindow.length; j++) {
+                        if (tempWindow[j].includes('comp_') && tempWindow[j] !== 'comp_app') {
+                            console.log(111);
+                            delete (window[tempWindow[j]] as any).instance;
+                            delete window[tempWindow[j]];
+                        }
+                    }
+                    console.log(window);
+                    mainCore.buildNewComponent(instance, appModule.obj.declarations, null, appModule.routes[i].component).then((bootstrapHTML) => {
+                        console.log(bootstrapHTML);
+                        if (document.getElementsByTagName('router-outlet').length === 0) {
+                            document.getElementsByTagName('app-root')[0].innerHTML = '<router-outlet></router-outlet>';
+                        }
+                        document.getElementsByTagName('router-outlet')[0].replaceWith(bootstrapHTML);
+                    });
+                } else {
+                    console.log(3);
+                    appModule.routes[i].loadChildren().then((dd: any) => {
+                        fixModule(dd.obj, dd, dd);
+                        // dd.previous = 'one';
+                        // console.log(dd);
+                        // const routes = dd.obj.imports.find((v: any) => v.routes).routes;
+                        // console.log(routes);
+                        // const route = new Route();
+                        // for (let i = 0; i < routes.length; i++) {
+                        //     let split = route.afterRawUrl.split('/');
+                        //     // console.log(split);
+                        //     split.splice(0, 2);
+                        //     split = split.join();
+                        //     console.log(split);
+                        //     console.log(routes[i].path);
+                        //     if (split === routes[i].path) {
+                        //         console.log(routes[0]);
+                        //         console.log(dd.obj);
+                        //         onAfterBootstrap(routes[i].component, dd.obj, dd);
+                        //         console.log(routes[i]);
+                        //         if (routes[i].component) {
+                        //
+                        //         } else {
+                        //             routes[i].loadChildren().then((dd: any) => {
+                        //                 console.log(dd);
+                        //             });
+                        //         }
+                        //         console.log(routes[i]);
+                        //     }
+                        // }
+                    });
+                }
+            }
+        }
+
+    }
+);
+
+function fixModule(obj: any, target: any, topModule: any) {
+    const routes = obj.imports.find((v: any) => v.routes).routes;
+    const route = new Route();
+    for (let i = 0; i < routes.length; i++) {
+        let splitString = route.afterRawUrl;
+        splitString = splitString.replace(topModule.mainPath, '');
+        splitString = splitString.replace('//' , '');
+        let sentence = '';
+        let isFound = false;
+        for (let j = 0; j < splitString.length; j++) {
+            sentence = sentence + splitString[j];
+            if (sentence === routes[i].path || sentence === (routes[i].path === '' ? '/' : routes[i].path)) {
+                isFound = true;
+            }
+        }
+        if (isFound) {
+            if (routes[i].component) {
+                onAfterBootstrap(routes[i].component, obj, target);
+            } else {
+                routes[i].loadChildren().then((dd: any) => {
+                    dd.previous = 'one';
+                    dd.mainPath = topModule.mainPath + '/' + routes[i].path;
+                    console.log(topModule.mainPath + '/' + routes[i].path);
+                    fixModule(dd.obj, target, dd);
+                });
+            }
+        }
+    }
+}
+
+function onAfterBootstrap(bootstrapComponent: any, mainObj: any, target: any) {
+    const instance = Injector.resolve(bootstrapComponent);
+    const mainCore = new MainCore();
+    mainCore.buildNewComponent(instance, mainObj, null, bootstrapComponent).then((bootstrapHTML) => {
+        console.log(bootstrapHTML);
+        if (document.getElementsByTagName('router-outlet').length === 0) {
+            document.getElementsByTagName('app-root')[0].innerHTML = '<router-outlet></router-outlet>';
+        }
+        document.getElementsByTagName('router-outlet')[0].replaceWith(bootstrapHTML);
+    });
+}
+
 //
 // var mainClass = new Main();
 // var bootstrap: any = LoginComponent;
