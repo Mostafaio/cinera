@@ -10,7 +10,7 @@ export class ProfileComponent {
     profileMsg = 'Man Profile hastam!';
 
     constructor(private route: Route) {
-        console.log(this.route);
+        // console.log(this.route);
     }
 
     onInit() {

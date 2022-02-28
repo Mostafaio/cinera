@@ -8,7 +8,7 @@ import {Route} from "../@cinera/route";
 }, 'app')
 export class AppComponent {
     constructor(private route: Route) {
-        console.log(this.route);
+        // console.log(this.route);
         // this.route.navigate('register');
     }
 }

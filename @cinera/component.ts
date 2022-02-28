@@ -6,9 +6,17 @@
 // import templateString from "../src/login/login.component.html";
 // @ts-ignore
 // import cssString from "../src/login/login.component.css";
-import {Injector} from "./injector";
+import "reflect-metadata";
+import callerCallsite from 'caller-callsite';
 
 export function Component(obj: { selector: string, templateUrl: string, styleUrl: string }, mainPath: string) {
+    // if (mainPath === 'testt') {
+    //     console.error(1);
+    //     console.log(`../src/${obj.templateUrl}`);
+    //     import(/* webpackChunkName: 'animal' */ '../src/testt/' + obj.templateUrl).then(dd => {
+    //         console.log(dd.default);
+    //     });
+    // }
     //  {{  }}
     // ctr: Function,
     // var html = require(obj.templateUrl);
@@ -25,6 +33,11 @@ export function Component(obj: { selector: string, templateUrl: string, styleUrl
     // console.log(ctr.prototype.id);
 
     return <any>function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        // @ts-ignore
+        // console.log(callerCallsite());
+        // console.log(target);
+        // console.log(Reflect.getMetadata("modulePath", target));
+        // console.log(__dirname);
         // console.log(Reflect.getMetadata('design:paramtypes', target));
         // console.log(target);
         // const example = Injector.resolve(target);
@@ -72,11 +85,11 @@ export function Component(obj: { selector: string, templateUrl: string, styleUrl
         //         // var x = "console.warn(target.prototype['find']())";
         //         // eval(x);
         //     }
-            // console.log(Object.getOwnPropertyNames(target.prototype));
-            // console.log(Object.keys(target.prototype));
-            // console.log(propertyKey);
-            // console.log(descriptor);
-            // console.log("first(): called");
+        // console.log(Object.getOwnPropertyNames(target.prototype));
+        // console.log(Object.keys(target.prototype));
+        // console.log(propertyKey);
+        // console.log(descriptor);
+        // console.log("first(): called");
         // });
     };
 }
@@ -95,40 +108,40 @@ export function Component(obj: { selector: string, templateUrl: string, styleUrl
 //     for (let i = 1; i < funcNames.length; i++) {
 //         ff = ff.replace(funcNames[i], "targetPrototype." + funcNames[i]);
 //     }
-    // funcValue = eval(ff);
-    // return htmlSource.replace(htmlVariable, funcValue);
-    // const varToString = (varObj: any) => Object.keys(varObj)[0];
-    // const havij = 42;
-    // const displayName = varToString({havij});
-    // console.log(displayName)
-    // var regex = "\{{\\s*" + funcName + "\\((.*?)\\)\\s*}}"; // \s*
-    // var currentHTML = html.replace(/\{{(.*?)\}}/g, 'golabi');
-    // var currentHTML = html.replace(/\{{name}}/g, 'golabi');
-    // console.warn(funcValue);
-    // let htmlVariables: any = htmlSource.match(/\{{(.*?)\}}/g);
-    // console.log(i);
-    // if (htmlVariables.length > 0) {
-    // console.log('1111', htmlVariable.replace('{{', '').replace('}}', '').replace(/ /g, ''));
-    // var ff = htmlVariable.replace('{{', '').replace('}}', '').replace(/ /g, '');
-    // if (ff.includes('(') && ff.includes(')')) {
-    //     console.log("targetPrototype." + ff);
-    //     funcValue = eval("targetPrototype." + ff);
-    // } else {
-    //     funcValue = eval(ff);
-    // }
-    // console.log(ff);
-    // if (!isNumeric(ff)) {
-    //     funcValue = eval("targetPrototype." + ff);
-    // } else {
-    //     funcValue = ff;
-    // }
-    // console.log(htmlSource, ff, funcValue, htmlVariable);
-    // var regex = "" + htmlVariable + "\g"; // \s*
-    // var regex = "" + htmlVariable + ""; // \s*
-    // console.log();
-    // }
-    // eval(x);
-    // console.log(new RegExp(regex));
+// funcValue = eval(ff);
+// return htmlSource.replace(htmlVariable, funcValue);
+// const varToString = (varObj: any) => Object.keys(varObj)[0];
+// const havij = 42;
+// const displayName = varToString({havij});
+// console.log(displayName)
+// var regex = "\{{\\s*" + funcName + "\\((.*?)\\)\\s*}}"; // \s*
+// var currentHTML = html.replace(/\{{(.*?)\}}/g, 'golabi');
+// var currentHTML = html.replace(/\{{name}}/g, 'golabi');
+// console.warn(funcValue);
+// let htmlVariables: any = htmlSource.match(/\{{(.*?)\}}/g);
+// console.log(i);
+// if (htmlVariables.length > 0) {
+// console.log('1111', htmlVariable.replace('{{', '').replace('}}', '').replace(/ /g, ''));
+// var ff = htmlVariable.replace('{{', '').replace('}}', '').replace(/ /g, '');
+// if (ff.includes('(') && ff.includes(')')) {
+//     console.log("targetPrototype." + ff);
+//     funcValue = eval("targetPrototype." + ff);
+// } else {
+//     funcValue = eval(ff);
+// }
+// console.log(ff);
+// if (!isNumeric(ff)) {
+//     funcValue = eval("targetPrototype." + ff);
+// } else {
+//     funcValue = ff;
+// }
+// console.log(htmlSource, ff, funcValue, htmlVariable);
+// var regex = "" + htmlVariable + "\g"; // \s*
+// var regex = "" + htmlVariable + ""; // \s*
+// console.log();
+// }
+// eval(x);
+// console.log(new RegExp(regex));
 
 // }
 

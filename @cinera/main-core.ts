@@ -1,5 +1,7 @@
 import {Handler} from "./handler";
 
+let coun = 0;
+
 export class MainCore {
     tags: { org: any, current: any, changes: any[], invVariables: [], invFunctions: [], arr?: any[], parent?: any }[] = [];
     instance: any;
@@ -14,6 +16,12 @@ export class MainCore {
 
     constructor() {
         this.name = this.name + Math.round(Math.random() * 10000);
+        // import(/* webpackChunkName: 'animal' */ `../src/product/ro.html`)
+        //     .then(m => {
+        //         console.warn('CHUNK LOADED!', m.default);
+        //         // m.default();
+        //     })
+        //     .catch(console.warn);
         // super(props);
 
     }
@@ -21,8 +29,8 @@ export class MainCore {
     buildNewComponent(instance: any, moduleObject: any, mainTag: any = null, mainClass: any = null) {
         this.mainClass = mainClass;
         this.instance = instance;
-        console.log(this.instance);
-        console.log(moduleObject);
+        // console.log(this.instance);
+        // console.log(moduleObject);
         this.declarations = moduleObject.declarations;
         var instancePrototype = Object.getPrototypeOf(instance);
         var path = 'src/' + instancePrototype.mainPath + '/';
@@ -30,9 +38,9 @@ export class MainCore {
             path = 'src/';
         }
         var tempHtmlLoc = path + instancePrototype.obj.templateUrl.replace('./', '');
-        tempHtmlLoc = __dirname + tempHtmlLoc;
+        tempHtmlLoc = '..' + __dirname + tempHtmlLoc;
         var tempCSSLoc = path + instancePrototype.obj.styleUrl.replace('./', '');
-        tempCSSLoc = __dirname + tempCSSLoc;
+        tempCSSLoc = '..' + __dirname + tempCSSLoc;
         var classFunctions = Object.getOwnPropertyNames(instancePrototype);
         var classVariables = Object.keys(instance);
         this.classFunctions = classFunctions;
@@ -104,6 +112,13 @@ export class MainCore {
 
         });
         // console.log(classVariables);
+        // console.log(tempHtmlLoc);
+        // const df = tempHtmlLoc.replace('../src/', '');
+        // if (coun === 0) {
+        //     import(/* webpackChunkName: 'animal' */ `../src/${df}`).then(dd => {
+        //         console.log(dd.default);
+        //     });
+        // }
         return this.getHTMLSource(tempHtmlLoc).then((htmlSource: string) => {
 
             if (mainTag) {
@@ -714,6 +729,7 @@ export class MainCore {
                         mainSentence = mainSentence + this.tags[index].org.childNodes[b].nodeValue[i];
                     }
                 }
+                // console.log(mainSentence);
                 this.tags[index].current.childNodes[b].nodeValue = mainSentence;
             }
         }
@@ -859,8 +875,18 @@ export class MainCore {
     }
 
     getHTMLSource(tempHtmlLoc: string) {
+        // console.log(tempHtmlLoc);
+        // return import(/* webpackChunkName: 'animal' */ tempHtmlLoc)
+        //     .then(m => {
+        //         console.warn('CHUNK LOADED!', m.default);
+        //         return m.default;
+        //         // m.default();
+        //     })
+        //     .catch(console.warn);
         return fetch(tempHtmlLoc).then((data) => {
             return data.text().then(html => {
+                coun++;
+                // console.error(coun);
                 return html;
             });
         });

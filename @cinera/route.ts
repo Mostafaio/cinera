@@ -16,7 +16,7 @@ export class Route {
         this.afterRawUrl = this.url.split('/');
         // console.log(document.location);
         this.afterRawUrl = document.location.pathname;
-        console.log(this.afterRawUrl);
+        // console.log(this.afterRawUrl);
     }
 
     getQueryParams(): Observable<{ title: string }[]> {
@@ -48,7 +48,7 @@ export class Route {
                     this.url = location.href;
                     if (event.state) {
                         // history changed because of pushState/replaceState
-                        console.warn('THEY DID IT AGAIN222!');
+                        // console.warn('THEY DID IT AGAIN222!');
                         subscriber.next({
                             preUrl: preUrl,
                             url: this.url,
@@ -56,7 +56,7 @@ export class Route {
                         });
                     } else {
                         // history changed because of a page load
-                        console.warn('THEY DID IT AGAIN!');
+                        // console.warn('THEY DID IT AGAIN!');
                         subscriber.next({
                             preUrl: preUrl,
                             url: this.url,

@@ -20,6 +20,12 @@ module.exports = {
             },
         ],
 
+        // parser: {
+        //     javascript: {
+        //         wrappedContextRegExp: /.*/,
+        //         wrappedContextRecursive: true
+        //     }
+        // }
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js', 'html'],

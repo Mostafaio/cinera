@@ -14,12 +14,13 @@ export function CModule(obj: {
             // location.href = location.href.substr(0, location.href.length - 1);
             window.history.pushState('page2', 'Title', location.href.substr(0, location.href.length - 1));
         }
-        console.log([target]);
+        // console.log([target]);
         target.obj = obj;
         if (!obj.routes) {
-            console.log(1, obj);
+            // console.log(1, obj);
             if (obj.bootstrap) {
-                console.log(1);
+                console.log(obj);
+                // console.log(1);
                 if (obj.bootstrap.length > 0) {
                     onBootstrap(obj.bootstrap[0], obj, target);
                 }
@@ -27,6 +28,7 @@ export function CModule(obj: {
             }
         } else {
             target.routes = obj.routes;
+            console.log(obj);
             // for (let i = 0; i <target.routes.length; i++) {
             //     if (target.routes[i].path === '') {
             //         console.log([target.routes[i].component]);
@@ -45,7 +47,7 @@ function onAfterBootstrap(bootstrapComponent: any, mainObj: any, target: any) {
     const instance = Injector.resolve(bootstrapComponent);
     const mainCore = new MainCore();
     mainCore.buildNewComponent(instance, mainObj, null, bootstrapComponent).then((bootstrapHTML) => {
-        console.log(bootstrapHTML);
+        // console.log(bootstrapHTML);
         if (document.getElementsByTagName('router-outlet').length === 0) {
             document.getElementsByTagName('app-root')[0].innerHTML = '<router-outlet></router-outlet>';
         }
@@ -57,33 +59,56 @@ function onAfterBootstrap(bootstrapComponent: any, mainObj: any, target: any) {
 function onBootstrap(bootstrapComponent: any, mainObj: any, target: any) {
     const instance = Injector.resolve(bootstrapComponent);
     const mainCore = new MainCore();
-    mainCore.buildNewComponent(instance, mainObj).then((bootstrapHTML) => {
-        if (mainObj.imports) {
-            const routes = mainObj.imports.find((v: any) => v.routes).routes;
-            target.routes = routes;
-            console.log(routes);
-            console.log(mainObj);
-            const route = new Route();
-            for (let i = 0; i < routes.length; i++) {
-                let splitString = route.afterRawUrl;
-                splitString = splitString.substr(1, splitString.length);
-                console.log(splitString, ' | ', routes[i].path);
-                console.log(splitString.split(routes[i].path));
-                if (splitString.split(routes[i].path)[0] === '') {
-                    if (routes[i].component) {
-                        onAfterBootstrap(routes[i].component, mainObj, target);
+    const routes = mainObj.imports.find((v: any) => v.routes).routes;
+    target.routes = routes;
+    const route = new Route();
+    let foundedRoute = -1;
+    for (let i = 0; i < routes.length; i++) {
+        let splitString = route.afterRawUrl;
+        splitString = splitString.substr(1, splitString.length);
+        // console.log(splitString, ' | ', routes[i].path);
+        // console.log(splitString.split(routes[i].path));
+        if (splitString.split(routes[i].path)[0] === '') {
+            foundedRoute = i;
+            if (routes[i].canActivate) {
+                for (let j = 0; j < routes[i].canActivate.length; j++) {
+                    const guard: any = Injector.resolve(routes[i].canActivate[j]);
+                    console.log(typeof instance);
+                    if (guard.canActivate() === false || guard.canActivate() === true) {
+                        if (guard.canActivate()) {
+                            buildComp(mainCore, instance, mainObj, routes, foundedRoute, target);
+                        }
+                        console.log(guard.canActivate());
                     } else {
-                        routes[i].loadChildren().then((dd: any) => {
-                            dd.previous = 'one';
-                            dd.mainPath = routes[i].path;
-                            fixModule(dd.obj, target, dd);
-                            console.log(dd);
-                        });
+                        guard.canActivate().subscribe(
+                            (canActivate: any) => {
+                                if (canActivate) {
+                                    buildComp(mainCore, instance, mainObj, routes, foundedRoute, target);
+                                }
+                            }
+                        );
                     }
-                    console.log(routes[i]);
+                    console.log(44);
                 }
             }
-            console.log(routes);
+        }
+    }
+    console.log(routes);
+
+}
+
+function buildComp(mainCore: any, instance: any, mainObj: any, routes: any, foundedRoute: any, target: any) {
+    mainCore.buildNewComponent(instance, mainObj).then((bootstrapHTML: any) => {
+        if (mainObj.imports) {
+            if (routes[foundedRoute].component) {
+                onAfterBootstrap(routes[foundedRoute].component, mainObj, target);
+            } else {
+                routes[foundedRoute].loadChildren().then((dd: any) => {
+                    dd.previous = 'one';
+                    dd.mainPath = routes[foundedRoute].path;
+                    fixModule(dd.obj, target, dd);
+                });
+            }
         }
         document.body.appendChild(bootstrapHTML);
     });
@@ -95,7 +120,7 @@ function fixModule(obj: any, target: any, topModule: any) {
     for (let i = 0; i < routes.length; i++) {
         let splitString = route.afterRawUrl;
         splitString = splitString.replace(topModule.mainPath, '');
-        splitString = splitString.replace('//' , '');
+        splitString = splitString.replace('//', '');
         let sentence = '';
         let isFound = false;
         for (let j = 0; j < splitString.length; j++) {

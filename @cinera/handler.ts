@@ -29,7 +29,7 @@ export class Handler {
             var tempTags = document.getElementsByTagName('*');
             // console.log([tempTags]);
 
-            console.log(window);
+            // console.log(window);
             // console.log(this.tag.current);
         });
         // document.body.appendChild(bootstrapHTML);

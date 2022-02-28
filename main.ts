@@ -6,7 +6,59 @@ import {MainCore} from "./@cinera/main-core";
 import {Route} from "./@cinera/route";
 import {Injector} from "./@cinera/injector";
 import {AppModule} from "./src/app.module";
+// main.ts
 
+// const htm: string = "./src/product/product.component.html";
+// var html = require(htm);
+// console.log(html); // <p>Hello world !</p>
+
+let fileName: any;
+
+const demo = document.createElement('button');
+demo.innerHTML = 'hvj';
+
+const inp = document.createElement('input');
+
+inp.addEventListener('input', (ev: any) => {
+    fileName = ev.target.value;
+});
+
+fileName = 'product.component';
+
+import(/* webpackChunkName: 'animal' */ `./src/product/${fileName}.html`)
+    .then(m => {
+        // console.warn('CHUNK LOADED!', m.default);
+        // m.default();
+    })
+    .catch(console.warn);
+
+demo.addEventListener('click', () => {
+    import(/* webpackChunkName: 'animal' */ `./src/product/${fileName}.html`)
+        .then(m => {
+            // console.warn('CHUNK LOADED!', m.default);
+            // m.default();
+        })
+        .catch(console.warn);
+});
+
+
+document.body.appendChild(demo);
+document.body.appendChild(inp);
+// export default function pageLoader(platform="desktop", componentName: any) {
+//     switch (platform) {
+//         case "mobile":
+//             return import(`./${componentName}`);
+//
+//         case "desktop":
+//             return import(`./${componentName}`);
+//     }
+// }
+
+// async function getComponent() {
+//     const lodash = 'lodash';
+//     const dd = await import(lodash);
+//     console.log(dd);
+// }
 
 export class Main {
     title: string = 'aaaa';
@@ -47,7 +99,7 @@ route.urlChanges().subscribe(
                 console.log(appModule);
                 console.log(data);
                 if (appModule.routes[i].component) {
-                    console.log(2);
+                    console.log(2, appModule.routes);
                     const instance = Injector.resolve(appModule.routes[i].component);
                     const mainCore = new MainCore();
                     console.log(1);
@@ -81,7 +133,7 @@ route.urlChanges().subscribe(
                         //     let split = route.afterRawUrl.split('/');
                         //     // console.log(split);
                         //     split.splice(0, 2);
-                        //     split = split.join();
+                         //     split = split.join();
                         //     console.log(split);
                         //     console.log(routes[i].path);
                         //     if (split === routes[i].path) {
